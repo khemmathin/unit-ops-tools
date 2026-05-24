@@ -781,8 +781,7 @@ function toggleEfficiency(){
   document.getElementById('r-n-lbl').textContent=effMode?'N actual':'N theoretical';
   document.getElementById('sens-ttl').innerHTML=effMode?
     'N theoretical vs R / R<sub>min</sub> <span style="font-size:9px;color:var(--muted)">(theoretical — unaffected by E<sub>MV</sub>)</span>':
-    'N theoretical vs R / R<sub>min</sub>':
-    'N theoretical vs R / Rₘᵢₙ';
+    'N theoretical vs R / R<sub>min</sub>';
   nShown=0;fullRedraw();
 }
 
