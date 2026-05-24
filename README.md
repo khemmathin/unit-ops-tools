@@ -10,8 +10,7 @@
 
 A standalone interactive tool for teaching and exploring the **McCabe–Thiele graphical construction** for binary distillation. Runs entirely in the browser — no installation, no server, no login required.
 
-**Live tool → [your-username.github.io/mccabe-thiele](https://your-username.github.io/mccabe-thiele)**  
-*(update this link after deploying)*
+**Live tool → [khemmathin.github.io/mccabe-thiele](https://khemmathin.github.io/mccabe-thiele)**
 
 ---
 
