@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flash Drum | 01202311 Unit Operations II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f1d2e;--navy:#1f3a5f;--navy-mid:#2c4d77;--navy-lt:#3d6494;
+  --cream:#f5f2eb;--orange:#c84b2f;--orange-lt:#d4603f;
+  --green:#2a7a50;--purple:#6b42a8;--gold:#e8b840;--muted:#7a8fa6;
+  --teal:#1e7a74;--teal-lt:#27a89f;
+  --mono:'IBM Plex Mono','Courier New',monospace;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--cream);font-family:var(--sans);
+  font-size:15px;display:flex;flex-direction:column;min-height:100vh}
+
+/* ── HEADER ─────────────────────────────────────────── */
+header{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 18px;background:var(--navy);border-bottom:1px solid var(--navy-mid);flex-shrink:0}
+.hd-title{font-family:var(--mono);font-size:17px;font-weight:600;letter-spacing:.08em}
+.hd-mid{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.hd-right{font-family:var(--mono);font-size:12px;color:var(--orange)}
+.hd-extra{display:flex;align-items:center;gap:14px}
+.utog{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.tsw{position:relative;width:34px;height:18px;cursor:pointer;flex-shrink:0}
+.tsw input{opacity:0;width:0;height:0;position:absolute}
+.ttr{position:absolute;inset:0;background:var(--navy-mid);border-radius:9px;transition:background .2s}
+.tsw input:checked+.ttr{background:var(--orange)}
+.tth{position:absolute;top:3px;left:3px;width:12px;height:12px;background:#fff;
+  border-radius:50%;transition:transform .2s;pointer-events:none}
+.tsw input:checked~.tth{transform:translateX(16px)}
+
+/* ── LAYOUT ──────────────────────────────────────────── */
+.app{display:grid;grid-template-columns:480px 1fr;flex:1;overflow:hidden;min-height:0}
+
+/* ── PANEL ───────────────────────────────────────────── */
+.panel{background:var(--navy);border-right:1px solid var(--navy-mid);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden}
+.sec{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;
+  color:var(--orange);text-transform:uppercase;padding:9px 14px 5px;
+  border-top:1px solid var(--navy-mid)}
+.sec:first-child{border-top:none}
+
+/* presets */
+.presets{padding:3px 14px 7px;display:flex;flex-direction:column;gap:3px}
+.pre-btn{background:rgba(255,255,255,.03);border:1px solid var(--navy-mid);
+  color:var(--cream);font-family:var(--mono);font-size:13px;
+  padding:6px 9px;cursor:pointer;text-align:left;line-height:1.5;transition:all .12s}
+.pre-btn:hover{background:var(--navy-mid);border-color:var(--navy-lt)}
+.pre-btn.active{border-color:var(--orange);color:var(--orange)}
+.pre-sub{color:var(--muted);font-size:10.5px;display:block}
+
+/* custom Antoine */
+.ant-wrap{padding:2px 14px 8px;display:none;flex-direction:column;gap:7px}
+.ant-wrap.show{display:flex}
+.ant-grp-lbl{font-family:var(--mono);font-size:10px;color:var(--orange);
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.ant-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.ant-f{display:flex;flex-direction:column;gap:2px}
+.ant-f label{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.ant-f input{background:var(--ink);border:1px solid var(--navy-mid);
+  color:var(--cream);font-family:var(--mono);font-size:11px;
+  padding:3px 5px;width:100%;outline:none}
+.ant-f input:focus{border-color:var(--orange)}
+.ant-note{font-family:var(--mono);font-size:10px;color:var(--muted);font-style:italic}
+.ant-err{font-family:var(--mono);font-size:11px;color:#ffaaaa;display:none}
+.ant-err.show{display:block}
+
+/* sliders */
+.sliders{padding:3px 14px 7px;display:flex;flex-direction:column;gap:5px}
+.sl-row{display:grid;grid-template-columns:52px 1fr 52px;align-items:center;gap:6px}
+.sl-lbl{font-family:var(--mono);font-size:13px;color:var(--muted);line-height:1.2}
+.sl-lbl em{font-style:normal;color:var(--cream)}
+.sl-lbl span{font-size:9px;color:var(--muted);display:block}
+.sl-locked{opacity:.35;pointer-events:none}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;
+  background:var(--navy-mid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--orange);cursor:pointer;border:2px solid var(--cream)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+  background:var(--orange);cursor:pointer;border:2px solid var(--cream);box-shadow:none}
+input.sl-val{font-family:var(--mono);font-size:13px;color:var(--cream);
+  text-align:right;width:52px;background:transparent;border:none;
+  border-bottom:1px solid rgba(255,255,255,.15);outline:none;padding:0;
+  -moz-appearance:textfield}
+input.sl-val::-webkit-outer-spin-button,
+input.sl-val::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input.sl-val:focus{border-bottom-color:var(--orange);color:var(--orange)}
+
+/* results */
+.results{padding:3px 14px 8px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px}
+.res{background:var(--ink);border:1px solid var(--navy-mid);padding:5px 7px}
+.res-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.05em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+.res-val{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--gold);line-height:1}
+.res-full{grid-column:1/-1}
+.phase-box{background:var(--ink);border:1px solid var(--navy-mid);
+  padding:5px 9px;font-family:var(--mono);font-size:12px;color:var(--muted);
+  display:flex;align-items:center;gap:8px}
+.phase-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* schematic */
+.schem-wrap{padding:6px 14px 8px}
+.schem-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.08em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:5px}
+
+/* ── DIAGRAM AREA ────────────────────────────────────── */
+.diagram-area{display:flex;flex-direction:column;background:var(--ink);overflow:hidden}
+.diagram-wrap{flex:1;display:flex;align-items:center;justify-content:center;
+  padding:10px 10px 4px;min-height:0}
+#diagram{max-height:100%;width:auto;display:block;max-width:680px}
+.legend{display:flex;gap:13px;flex-wrap:wrap;justify-content:center;padding:0 10px 4px}
+.leg{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.leg-line{width:18px;height:2px;flex-shrink:0;border-radius:1px}
+.leg-dash{width:18px;height:0;flex-shrink:0;border-top:2px dashed}
+
+/* DoF panel */
+.dof-wrap{border-top:1px solid var(--navy-mid);background:var(--navy);
+  padding:8px 18px 12px;flex-shrink:0}
+.dof-ttl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;font-weight:600;
+  color:var(--orange);text-transform:uppercase;margin-bottom:8px}
+.dof-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.dof-block{background:var(--ink);border:1px solid var(--navy-mid);padding:8px 10px}
+.dof-block-hd{font-family:var(--mono);font-size:10px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.dof-block-hd.eq1{color:var(--orange)}
+.dof-block-hd.eq2{color:var(--teal-lt)}
+.dof-block-hd.res{color:var(--gold)}
+.dof-line{font-family:var(--mono);font-size:11px;color:var(--muted);
+  line-height:1.7;margin-bottom:2px}
+.dof-line strong{color:var(--cream);font-weight:600}
+.dof-line em{font-style:normal;color:var(--muted)}
+.dof-eqn{font-family:var(--mono);font-size:12px;color:var(--cream);
+  background:rgba(255,255,255,.04);padding:4px 7px;margin:4px 0;
+  border-left:2px solid var(--navy-lt)}
+.dof-val{font-family:var(--mono);font-size:13px;font-weight:600}
+.dof-rule{font-family:var(--mono);font-size:10px;color:var(--muted);
+  border-top:1px solid var(--navy-mid);margin-top:8px;padding-top:6px;line-height:1.6}
+.dof-rule strong{color:var(--cream)}
+
+/* warn */
+.warn{margin:0 14px 6px;padding:6px 9px;background:rgba(160,30,30,.25);
+  border:1px solid rgba(200,60,60,.5);font-family:var(--mono);
+  font-size:12px;color:#ffaaaa;display:none}
+.warn.on{display:block}
+
+/* responsive */
+@media(max-width:1099px){
+  .app{grid-template-columns:300px 1fr}
+  .pre-btn{font-size:11px}.pre-sub{font-size:9.5px}
+  .sl-lbl{font-size:12px}.res-val{font-size:18px}
+  .dof-grid{grid-template-columns:1fr}
+  .hd-mid{display:none}
+}
+@media(max-width:699px){
+  .app{display:flex;flex-direction:column;overflow:visible}
+  .panel{overflow-y:visible;height:auto;order:2}
+  .diagram-area{order:1;min-height:360px}
+  body{overflow-y:auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-title">FLASH DRUM</div>
+  <div class="hd-mid">01202311 · UNIT OPERATIONS II · SINGLE EQUILIBRIUM STAGE</div>
+  <div class="hd-extra">
+    <div class="utog">
+      SI
+      <label class="tsw">
+        <input type="checkbox" id="unitTog" onchange="redrawAll()">
+        <div class="ttr"></div><div class="tth"></div>
+      </label>
+      °F
+    </div>
+    <div class="hd-right">KU DEPT. CHEM. ENG.</div>
+  </div>
+</header>
+
+<div class="app">
+<aside class="panel">
+
+  <div class="sec">System</div>
+  <div class="presets">
+    <button class="pre-btn active" onclick="loadSys(0)">
+      n-Pentane / n-Heptane &nbsp;α ≈ 6–8
+      <span class="pre-sub">Antoine + Raoult (NIST) · 1 atm · matches L02a worked example ✓</span>
+    </button>
+    <button class="pre-btn" onclick="loadSys(1)">
+      Benzene–Toluene &nbsp;α = 2.37–2.54
+      <span class="pre-sub">Geankoplis Table 26.1-1 · Raoult sweep · 1 atm · ideal ✓</span>
+    </button>
+    <button class="pre-btn" onclick="loadSys(2)">
+      Methanol–Water &nbsp;α = 2.5–7.6
+      <span class="pre-sub">NIST / Gmehling DECHEMA · tabulated (x,y) · 1 atm ✓</span>
+    </button>
+    <button class="pre-btn" onclick="loadSys(3)">
+      Ethanol–Water &nbsp;azeotrope x = 0.894
+      <span class="pre-sub">Chu et al. 1950 / NIST · tabulated (x,y) · 1 atm ✓</span>
+    </button>
+    <button class="pre-btn" onclick="loadSys(4)">
+      n-Heptane / n-Octane &nbsp;α = 2.13–2.24
+      <span class="pre-sub">Antoine + Raoult (NIST) · near-ideal ✓</span>
+    </button>
+    <button class="pre-btn" onclick="loadSys(5)">
+      Custom System
+      <span class="pre-sub">Enter Antoine A, B, C · log₁₀(P°/mmHg) = A−B/(T+C) · T in °C</span>
+    </button>
+  </div>
+
+  <div class="ant-wrap" id="antWrap">
+    <div>
+      <div class="ant-grp-lbl">Component A (more volatile)</div>
+      <div class="ant-row">
+        <div class="ant-f"><label>A</label><input id="ant-Aa" type="number" step="any" value="6.85221" oninput="onAntChange()"></div>
+        <div class="ant-f"><label>B</label><input id="ant-Ba" type="number" step="any" value="1064.63" oninput="onAntChange()"></div>
+        <div class="ant-f"><label>C</label><input id="ant-Ca" type="number" step="any" value="232.000" oninput="onAntChange()"></div>
+      </div>
+    </div>
+    <div>
+      <div class="ant-grp-lbl">Component B (less volatile)</div>
+      <div class="ant-row">
+        <div class="ant-f"><label>A</label><input id="ant-Ab" type="number" step="any" value="6.90253" oninput="onAntChange()"></div>
+        <div class="ant-f"><label>B</label><input id="ant-Bb" type="number" step="any" value="1267.828" oninput="onAntChange()"></div>
+        <div class="ant-f"><label>C</label><input id="ant-Cb" type="number" step="any" value="216.900" oninput="onAntChange()"></div>
+      </div>
+    </div>
+    <div class="ant-note">Defaults pre-filled with n-pentane (A) / n-heptane (B)</div>
+    <div class="ant-err" id="antErr"></div>
+  </div>
+
+  <div class="sec">Parameters</div>
+  <div class="sliders">
+    <div class="sl-row">
+      <div class="sl-lbl"><em>z</em><sub>F</sub><span>feed</span></div>
+      <input type="range" id="sl-xF" min="0.05" max="0.90" step="0.005" value="0.40"
+             oninput="setParam('xF',+this.value)">
+      <input type="number" class="sl-val" id="v-xF" value="0.400" min="0.05" max="0.90" step="0.001"
+             onchange="setParam('xF',clamp(+this.value,0.05,0.90))">
+    </div>
+    <div class="sl-row">
+      <div class="sl-lbl"><em>V/F</em><span>vapour</span></div>
+      <input type="range" id="sl-vf" min="0.01" max="0.99" step="0.01" value="0.40"
+             oninput="setParam('psi',+this.value)">
+      <input type="number" class="sl-val" id="v-vf" value="0.40" min="0.01" max="0.99" step="0.001"
+             onchange="setParam('psi',clamp(+this.value,0.01,0.99))">
+    </div>
+  </div>
+
+  <div class="warn" id="warn"></div>
+
+  <div class="sec">Results</div>
+  <div class="results">
+    <div class="res"><div class="res-lbl">x (liquid)</div><div class="res-val" id="r-x">—</div></div>
+    <div class="res"><div class="res-lbl">y (vapour)</div><div class="res-val" id="r-y">—</div></div>
+    <div class="res"><div class="res-lbl">L / F</div><div class="res-val" id="r-lf">—</div></div>
+    <div class="res"><div class="res-lbl">V / F</div><div class="res-val" id="r-vf">—</div></div>
+    <div class="res res-full">
+      <div class="phase-box">
+        <div class="phase-dot" id="phase-dot"></div>
+        <span id="phase-txt" style="font-family:var(--mono);font-size:12px;color:var(--cream)">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">Process Schematic</div>
+  <div class="schem-wrap">
+    <svg id="schematic" viewBox="0 0 420 110" xmlns="http://www.w3.org/2000/svg"
+         style="width:100%;height:auto"></svg>
+  </div>
+
+</aside>
+
+<section class="diagram-area">
+  <div class="diagram-wrap">
+    <svg id="diagram" viewBox="0 0 680 580" xmlns="http://www.w3.org/2000/svg"
+         style="max-width:680px;width:100%;height:auto"></svg>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-line" style="background:#4a6d8c;height:2.5px"></div>Eq. curve</div>
+    <div class="leg"><div class="leg-dash" style="border-color:#7a9ab4"></div>Diagonal</div>
+    <div class="leg"><div class="leg-line" style="background:var(--orange)"></div>Operating line</div>
+    <div class="leg"><div class="leg-dash" style="border-color:rgba(200,200,200,.35)"></div>V/F limits</div>
+    <div class="leg"><div class="leg-line" style="background:var(--gold);height:3px"></div>Solution (x, y)</div>
+  </div>
+  <div class="dof-wrap">
+    <div class="dof-ttl">Degrees of Freedom Analysis</div>
+    <div class="dof-grid">
+      <div class="dof-block">
+        <div class="dof-block-hd eq1">① Material balance</div>
+        <div class="dof-eqn">y = −(L/V)·x + (F/V)·z<sub>F</sub></div>
+        <div class="dof-line">A straight line through (<strong id="dof-anchor">z<sub>F</sub>, z<sub>F</sub></strong>) on the diagonal with slope −L/V.</div>
+        <div class="dof-line em">Alone: <em>infinitely many</em> (x, y) pairs satisfy this line.</div>
+      </div>
+      <div class="dof-block">
+        <div class="dof-block-hd eq2">② Equilibrium condition</div>
+        <div class="dof-eqn">y = f(x) &nbsp;[VLE curve at 1 atm]</div>
+        <div class="dof-line">Every point on the equilibrium curve satisfies vapour–liquid equilibrium.</div>
+        <div class="dof-line em">Alone: <em>infinitely many</em> (x, y) pairs lie on this curve.</div>
+      </div>
+      <div class="dof-block">
+        <div class="dof-block-hd res">① ∩ ② → unique solution</div>
+        <div class="dof-line"><strong>2 equations, 2 unknowns</strong> → 0 degrees of freedom → exactly one (x, y).</div>
+        <div class="dof-line" style="margin-top:6px">
+          <strong>x =</strong> <span id="dof-x" style="color:var(--gold);font-family:var(--mono)">—</span><br>
+          <strong>y =</strong> <span id="dof-y" style="color:var(--gold);font-family:var(--mono)">—</span><br>
+          <strong>slope −L/V =</strong> <span id="dof-slope" style="color:var(--muted);font-family:var(--mono)">—</span>
+        </div>
+        <div class="dof-rule">
+          <strong>Gibbs Phase Rule:</strong> F = C−P+2 = 2−2+2 = <strong>2</strong> intensive DoF.<br>
+          Fix P (1 atm) → 1 DoF. The operating line uses the remaining 1 DoF, locking (x, y).
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════
+//  VLE DATA  (same sources as McCabe-Thiele tool)
+// ════════════════════════════════════════════════════════════════════════
+const BT_DATA = [
+  [80.1,101.32,38.16],[85,116.9,46.0],[90,135.5,54.0],
+  [95,155.7,63.3],[100,179.2,74.3],[105,204.2,86.0],[110.6,240.0,101.32]
+];
+const MW_DATA = [
+  [0,0,100],[0.02,0.134,96.43],[0.04,0.230,93.55],[0.06,0.304,91.18],
+  [0.08,0.365,89.26],[0.1,0.418,87.68],[0.15,0.517,84.42],[0.2,0.579,81.67],
+  [0.3,0.665,77.96],[0.4,0.729,75.29],[0.5,0.779,73.11],[0.6,0.825,71.29],
+  [0.7,0.870,69.68],[0.8,0.915,68.05],[0.9,0.958,66.35],[1,1,64.53]
+];
+const EW_DATA = [
+  [0,0,100],[0.019,0.170,95.5],[0.0721,0.3891,89],[0.0966,0.4375,86.7],
+  [0.1238,0.4704,85.3],[0.1661,0.5089,84.1],[0.2337,0.5445,82.7],
+  [0.2608,0.558,82],[0.3273,0.5826,80.7],[0.3965,0.6122,79.8],
+  [0.5079,0.6564,79.7],[0.5198,0.6599,79.3],[0.5732,0.6841,78.74],
+  [0.6763,0.7385,78.41],[0.7472,0.7815,78.15],[0.8943,0.8943,78.15]
+];
+// Antoine: log10(P/mmHg) = A − B/(T+C), T in °C  [NIST]
+const ANT_C5  = {A:6.85221,B:1064.63,C:232.000}; // n-pentane,  bp 36.1°C ✓
+const ANT_C7  = {A:6.90253,B:1267.828,C:216.900}; // n-heptane,  bp 98.3°C ✓
+const ANT_BEN = {A:6.90565,B:1211.033,C:220.790}; // benzene,    bp 80.1°C ✓
+const ANT_TOL = {A:6.95464,B:1344.800,C:219.482}; // toluene,    bp 110.6°C ✓
+const ANT_HEP = ANT_C7;
+const ANT_OCT = {A:6.91868,B:1351.756,C:209.100}; // n-octane,   bp 125.7°C ✓
+
+const SYSTEMS = [
+  { id:'ph', name:'n-Pentane/n-Heptane',
+    type:'antoine', antA:ANT_C5, antB:ANT_C7, P_fixed:true, xMax:1,
+    src:'Antoine+Raoult (NIST) · 1 atm',
+    def:{xF:0.40, psi:0.40, pressure:101.325}
+  },
+  { id:'bt', name:'Benzene–Toluene',
+    type:'raoult_table', raw:BT_DATA, P_fixed:true, xMax:1,
+    src:'Geankoplis Table 26.1-1',
+    def:{xF:0.45, psi:0.40, pressure:101.325}
+  },
+  { id:'mw', name:'Methanol–Water',
+    type:'tabxy', raw:MW_DATA, P_fixed:true, xMax:1,
+    src:'NIST / Gmehling DECHEMA',
+    def:{xF:0.35, psi:0.40, pressure:101.325}
+  },
+  { id:'ew', name:'Ethanol–Water',
+    type:'tabxy', raw:EW_DATA, P_fixed:true, xMax:0.8943, xAz:0.8943,
+    src:'Chu et al. 1950 / NIST',
+    def:{xF:0.30, psi:0.40, pressure:101.325}
+  },
+  { id:'ho', name:'n-Heptane/n-Octane',
+    type:'antoine', antA:ANT_HEP, antB:ANT_OCT, P_fixed:true, xMax:1,
+    src:'Antoine+Raoult (NIST) · 1 atm',
+    def:{xF:0.50, psi:0.40, pressure:101.325}
+  },
+  { id:'cu', name:'Custom System',
+    type:'antoine', antA:{...ANT_C5}, antB:{...ANT_C7}, P_fixed:false, xMax:1,
+    src:'User-supplied Antoine constants',
+    def:{xF:0.40, psi:0.40, pressure:101.325}
+  }
+];
+
+// ════════════════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════════════════
+let sysIdx=0, P={...SYSTEMS[0].def}, VLE=null;
+const clamp=(v,mn,mx)=>Math.max(mn,Math.min(mx,isNaN(v)?mn:v));
+
+// ════════════════════════════════════════════════════════════════════════
+//  VLE ENGINE
+// ════════════════════════════════════════════════════════════════════════
+function lerp1(arr,xv,col){
+  if(xv<=arr[0][0])return arr[0][col];
+  if(xv>=arr[arr.length-1][0])return arr[arr.length-1][col];
+  for(let i=0;i<arr.length-1;i++)
+    if(xv>=arr[i][0]&&xv<=arr[i+1][0]){
+      const t=(xv-arr[i][0])/(arr[i+1][0]-arr[i][0]);
+      return arr[i][col]+t*(arr[i+1][col]-arr[i][col]);}
+  return arr[arr.length-1][col];
+}
+function antVP(a,T){return Math.pow(10,a.A-a.B/(T+a.C));}
+function antBP(a,P){return a.B/(a.A-Math.log10(P))-a.C;}
+
+function buildPchip(xs,ys){
+  const n=xs.length;if(n<2)return()=>ys[0];
+  const h=[],s=[];
+  for(let i=0;i<n-1;i++){h[i]=xs[i+1]-xs[i];s[i]=(ys[i+1]-ys[i])/h[i];}
+  const d=new Array(n).fill(0);
+  for(let i=1;i<n-1;i++){
+    if(s[i-1]*s[i]<=0){d[i]=0;}
+    else{const w1=2*h[i]+h[i-1],w2=h[i]+2*h[i-1];d[i]=(w1+w2)/(w1/s[i-1]+w2/s[i]);}
+  }
+  const ep=(sa,sb,ha,hb)=>{const e=((2*ha+hb)*sa-ha*sb)/(ha+hb);
+    return Math.sign(e)!==Math.sign(sa)?0:Math.abs(e)>3*Math.abs(sa)?3*sa:e;};
+  d[0]=n>2?ep(s[0],s[1],h[0],h[1]):s[0];
+  d[n-1]=n>2?ep(s[n-2],s[n-3]||s[n-2],h[n-2],h[n-3]||h[n-2]):s[n-2];
+  return function(x){
+    if(x<=xs[0])return ys[0];if(x>=xs[n-1])return ys[n-1];
+    let lo=0,hi=n-2;while(hi-lo>1){const m=(lo+hi)>>1;xs[m]<=x?lo=m:hi=m;}
+    const hk=h[lo],t=(x-xs[lo])/hk,t2=t*t,t3=t2*t;
+    return(2*t3-3*t2+1)*ys[lo]+(t3-2*t2+t)*hk*d[lo]+(-2*t3+3*t2)*ys[lo+1]+(t3-t2)*hk*d[lo+1];
+  };
+}
+
+function genVLE(sys, Pk){
+  const N=350, pts=[], xMax=sys.xMax||1;
+  if(sys.type==='raoult_table'){
+    const T0=sys.raw[0][0],T1=sys.raw[sys.raw.length-1][0];
+    for(let i=0;i<=N;i++){
+      const T=T0+(T1-T0)*i/N,PA=lerp1(sys.raw,T,1),PB=lerp1(sys.raw,T,2);
+      if(PA<=PB)continue;
+      const x=(Pk-PB)/(PA-PB),y=x*PA/Pk;
+      if(x<-1e-4||x>1+1e-4)continue;
+      const xc=Math.max(0,Math.min(1,x)),yc=Math.max(0,Math.min(1,y));
+      pts.push({x:xc,y:yc,T});
+    }
+  } else if(sys.type==='tabxy'){
+    const rxs=sys.raw.map(r=>r[0]),rys=sys.raw.map(r=>r[1]),rTs=sys.raw.map(r=>r[2]);
+    const iY=buildPchip(rxs,rys),iT=buildPchip(rxs,rTs);
+    for(let i=0;i<=N;i++){
+      const x=i/N*xMax,y=Math.max(0,Math.min(1,iY(x))),T=iT(x);
+      pts.push({x,y,T});
+    }
+  } else {
+    const Pm=Pk*7.50062,TA=antBP(sys.antA,Pm),TB=antBP(sys.antB,Pm);
+    if(isNaN(TA)||isNaN(TB)||TA>=TB)return null;
+    for(let i=0;i<=N;i++){
+      const T=TA+(TB-TA)*i/N,PA=antVP(sys.antA,T),PB=antVP(sys.antB,T);
+      if(PA<=PB)continue;
+      const x=(Pm-PB)/(PA-PB),y=x*PA/Pm;
+      if(x<-1e-4||x>1+1e-4)continue;
+      const xc=Math.max(0,Math.min(1,x)),yc=Math.max(0,Math.min(1,y));
+      pts.push({x:xc,y:yc,T});
+    }
+  }
+  pts.sort((a,b)=>a.x-b.x);
+  const revPts=pts.filter(p=>p.x<=xMax+1e-4).slice().sort((a,b)=>a.y-b.y);
+  return{pts,revPts,xMax};
+}
+
+function eqY(vle,x){
+  const p=vle.pts;
+  if(x<=p[0].x)return p[0].y;if(x>=p[p.length-1].x)return p[p.length-1].y;
+  let lo=0,hi=p.length-1;while(hi-lo>1){const m=(lo+hi)>>1;p[m].x<=x?lo=m:hi=m;}
+  const t=(x-p[lo].x)/(p[hi].x-p[lo].x);return p[lo].y+t*(p[hi].y-p[lo].y);
+}
+function eqX(vle,y){
+  const p=vle.revPts;
+  if(y<=p[0].y)return p[0].x;if(y>=p[p.length-1].y)return p[p.length-1].x;
+  let lo=0,hi=p.length-1;while(hi-lo>1){const m=(lo+hi)>>1;p[m].y<=y?lo=m:hi=m;}
+  const t=(y-p[lo].y)/(p[hi].y-p[lo].y);return p[lo].x+t*(p[hi].x-p[lo].x);
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  FLASH SOLVER
+// ════════════════════════════════════════════════════════════════════════
+function solveFlash(vle, xF, psi){
+  const xMax=vle.xMax;
+  // limiting cases
+  if(psi<=0.005)return{phase:'liquid',x:xF,y:eqY(vle,xF),psi:0,LV:Infinity};
+  if(psi>=0.995)return{phase:'vapour',x:eqX(vle,xF),y:xF,psi:1,LV:0};
+
+  const LV=(1-psi)/psi; // L/V = slope magnitude
+  const opY=x=>-(LV)*x+xF/psi;
+
+  // find intersection: f(x) = eqY(x) - opY(x)
+  const f=x=>eqY(vle,x)-opY(x);
+  let lo=1e-4, hi=xMax-1e-4;
+  let fLo=f(lo), fHi=f(hi);
+
+  // scan if no bracket
+  if(fLo*fHi>0){
+    for(let xi=lo+0.02;xi<hi;xi+=0.02){
+      const fi=f(xi);
+      if(fi*fLo<0){hi=xi;fHi=fi;break;}
+      fLo=fi;lo=xi;
+    }
+  }
+  if(fLo*fHi>0){
+    // feed outside two-phase region
+    if(fHi<0)return{phase:'vapour',x:xMax,y:xF,psi:1,LV:0};
+    return{phase:'liquid',x:xF,y:eqY(vle,xF),psi:0,LV:Infinity};
+  }
+  for(let i=0;i<60;i++){
+    const mid=(lo+hi)/2,fm=f(mid);
+    if(fm*fLo>0){lo=mid;fLo=fm;}else{hi=mid;}
+    if(hi-lo<1e-8)break;
+  }
+  const xS=(lo+hi)/2, yS=eqY(vle,xS);
+  return{phase:'two-phase',x:xS,y:yS,psi,LV};
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  DIAGRAM  (viewBox 0 0 680 580)
+// ════════════════════════════════════════════════════════════════════════
+const ML=76,MR=16,MT=16,MB=56,VW=680,VH=580;
+const PW=VW-ML-MR,PH=VH-MT-MB;
+const sx=v=>ML+v*PW, sy=v=>MT+(1-v)*PH;
+const f1=v=>v.toFixed(1), LC='#f5f2eb';
+
+function drawDiagram(){
+  if(!VLE)return;
+  const {xF,psi}=P, sol=solveFlash(VLE,xF,psi);
+  const sys=SYSTEMS[sysIdx];
+  let h='';
+
+  // plot background
+  h+=`<rect x="${ML}" y="${MT}" width="${PW}" height="${PH}" fill="#f5f2eb" rx="1"/>`;
+  // grid
+  for(let v=0.1;v<1;v+=0.1){
+    const vr=Math.round(v*10)/10;
+    h+=`<line x1="${f1(sx(vr))}" y1="${MT}" x2="${f1(sx(vr))}" y2="${MT+PH}" stroke="#d4d0c8" stroke-width="0.6"/>`;
+    h+=`<line x1="${ML}" y1="${f1(sy(vr))}" x2="${ML+PW}" y2="${f1(sy(vr))}" stroke="#d4d0c8" stroke-width="0.6"/>`;
+  }
+  // axes
+  h+=`<line x1="${ML}" y1="${MT}" x2="${ML}" y2="${MT+PH+1}" stroke="#1f3a5f" stroke-width="2"/>`;
+  h+=`<line x1="${ML-1}" y1="${MT+PH}" x2="${ML+PW}" y2="${MT+PH}" stroke="#1f3a5f" stroke-width="2"/>`;
+  // tick labels
+  for(let v=0;v<=1.001;v+=0.1){
+    const vr=Math.round(v*10)/10,lbl=vr.toFixed(1);
+    h+=`<line x1="${f1(sx(vr))}" y1="${MT+PH}" x2="${f1(sx(vr))}" y2="${MT+PH+5}" stroke="${LC}" stroke-width="1.2"/>`;
+    h+=`<text x="${f1(sx(vr))}" y="${MT+PH+19}" text-anchor="middle" font-family="monospace" font-size="13" fill="${LC}">${lbl}</text>`;
+    h+=`<line x1="${ML-5}" y1="${f1(sy(vr))}" x2="${ML}" y2="${f1(sy(vr))}" stroke="${LC}" stroke-width="1.2"/>`;
+    h+=`<text x="${ML-8}" y="${f1(sy(vr)+4)}" text-anchor="end" font-family="monospace" font-size="13" fill="${LC}">${lbl}</text>`;
+  }
+  // axis labels
+  h+=`<text x="${f1(ML+PW/2)}" y="${MT+PH+42}" text-anchor="middle" font-family="monospace" font-size="14" fill="${LC}">mole fraction in liquid, x</text>`;
+  h+=`<text x="${ML-55}" y="${f1(MT+PH/2)}" text-anchor="middle" font-family="monospace" font-size="14" fill="${LC}" transform="rotate(-90 ${ML-55} ${f1(MT+PH/2)})">mole fraction in vapour, y</text>`;
+
+  // 45° diagonal
+  h+=`<line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(1)}" y2="${sy(1)}" stroke="#7a9ab4" stroke-width="1.5" stroke-dasharray="8,5"/>`;
+
+  // equilibrium curve
+  const ep=VLE.pts.map(({x,y})=>`${f1(sx(x))},${f1(sy(y))}`);
+  h+=`<polyline points="${ep.join(' ')}" fill="none" stroke="#1f3a5f" stroke-width="2.8"/>`;
+
+  // azeotrope marker
+  if(sys.xAz){
+    h+=`<line x1="${f1(sx(sys.xAz))}" y1="${MT}" x2="${f1(sx(sys.xAz))}" y2="${MT+PH}" stroke="#c84b2f" stroke-width="1" stroke-dasharray="5,4" opacity="0.5"/>`;
+    h+=`<text x="${f1(sx(sys.xAz)-4)}" y="${MT+13}" text-anchor="end" font-family="monospace" font-size="10" fill="#c84b2f">azeotrope</text>`;
+  }
+
+  // ── Limiting case lines ───────────────────────────────────────────────
+  // V/F → 0: vertical at xF (all liquid)
+  h+=`<line x1="${f1(sx(xF))}" y1="${MT}" x2="${f1(sx(xF))}" y2="${MT+PH}" stroke="rgba(200,200,200,.2)" stroke-width="1.2" stroke-dasharray="6,4"/>`;
+  // V/F → 1: horizontal at yF = xF (all vapour)
+  h+=`<line x1="${ML}" y1="${f1(sy(xF))}" x2="${ML+PW}" y2="${f1(sy(xF))}" stroke="rgba(200,200,200,.2)" stroke-width="1.2" stroke-dasharray="6,4"/>`;
+
+  // ── Feed point (zF, zF) ──────────────────────────────────────────────
+  h+=`<circle cx="${f1(sx(xF))}" cy="${f1(sy(xF))}" r="5" fill="white" stroke="#c84b2f" stroke-width="2"/>`;
+  h+=`<text x="${f1(sx(xF)+8)}" y="${f1(sy(xF)-8)}" font-family="monospace" font-size="13" fill="#c84b2f" font-weight="600">z<tspan dy="3" font-size="10">F</tspan><tspan dy="-3"> = ${xF.toFixed(3)}</tspan></text>`;
+
+  // ── Operating line ────────────────────────────────────────────────────
+  if(sol.phase==='two-phase'){
+    const {x,y,LV}=sol;
+    // extend operating line across the plot
+    // y = -LV*x + xF/psi, clip to [0,1] box
+    const opY=xv=>-LV*xv+xF/psi;
+    const pts2=[];
+    const tryPt=(xv,yv)=>{if(xv>=-1e-3&&xv<=1+1e-3&&yv>=-1e-3&&yv<=1+1e-3)pts2.push([Math.max(0,Math.min(1,xv)),Math.max(0,Math.min(1,yv))]);};
+    tryPt(0, opY(0));
+    tryPt(1, opY(1));
+    if(Math.abs(LV)>1e-6){tryPt(-opY(0)/(-LV),0);tryPt((1-opY(0))/(-LV),1);}
+    pts2.sort((a,b)=>a[0]-b[0]);
+    const u=pts2.filter((p,i)=>i===0||Math.hypot(p[0]-pts2[i-1][0],p[1]-pts2[i-1][1])>1e-4);
+    if(u.length>=2){
+      const [x1,y1]=[sx(u[0][0]),sy(u[0][1])],[x2,y2]=[sx(u[u.length-1][0]),sy(u[u.length-1][1])];
+      h+=`<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" stroke="#c84b2f" stroke-width="2.2"/>`;
+    }
+    // Solution point highlight
+    h+=`<line x1="${f1(sx(x))}" y1="${MT+PH}" x2="${f1(sx(x))}" y2="${f1(sy(x))}" stroke="#e8b840" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>`;
+    h+=`<line x1="${ML}" y1="${f1(sy(y))}" x2="${f1(sx(y))}" y2="${f1(sy(y))}" stroke="#e8b840" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>`;
+    h+=`<circle cx="${f1(sx(x))}" cy="${f1(sy(y))}" r="7" fill="#e8b840" stroke="#0f1d2e" stroke-width="2.5"/>`;
+    // x label
+    h+=`<text x="${f1(sx(x))}" y="${MT+PH+32}" text-anchor="middle" font-family="monospace" font-size="12" fill="#e8b840">x=${x.toFixed(3)}</text>`;
+    // y label
+    h+=`<text x="${ML-8}" y="${f1(sy(y)+4)}" text-anchor="end" font-family="monospace" font-size="12" fill="#e8b840">y=${y.toFixed(3)}</text>`;
+  } else if(sol.phase==='liquid'){
+    // vertical operating line
+    h+=`<line x1="${f1(sx(xF))}" y1="${MT}" x2="${f1(sx(xF))}" y2="${MT+PH}" stroke="#c84b2f" stroke-width="2.2"/>`;
+    h+=`<text x="${f1(sx(xF)+4)}" y="${MT+30}" font-family="monospace" font-size="11" fill="#c84b2f">all liquid</text>`;
+  } else {
+    // horizontal operating line
+    h+=`<line x1="${ML}" y1="${f1(sy(xF))}" x2="${ML+PW}" y2="${f1(sy(xF))}" stroke="#c84b2f" stroke-width="2.2"/>`;
+    h+=`<text x="${f1(sx(0.5))}" y="${f1(sy(xF)-8)}" text-anchor="middle" font-family="monospace" font-size="11" fill="#c84b2f">all vapour</text>`;
+  }
+
+  document.getElementById('diagram').innerHTML=h;
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  PROCESS SCHEMATIC  (viewBox 0 0 420 110)
+// ════════════════════════════════════════════════════════════════════════
+function drawSchematic(){
+  if(!VLE)return;
+  const {xF,psi}=P, sol=solveFlash(VLE,xF,psi);
+  const C=LC, M='#7a8fa6';
+  let h='';
+
+  // Feed arrow + label
+  h+=`<line x1="10" y1="55" x2="68" y2="55" stroke="${C}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+  h+=`<text x="5" y="48" font-family="monospace" font-size="10" fill="#c84b2f">F, z</text>`;
+  h+=`<text x="5" y="60" font-family="monospace" font-size="9" fill="${M}">z = ${xF.toFixed(3)}</text>`;
+
+  // Heater box
+  h+=`<rect x="68" y="40" width="44" height="30" fill="none" stroke="${M}" stroke-width="1.2" rx="2"/>`;
+  for(let i=0;i<4;i++)h+=`<line x1="${75+i*7}" y1="45" x2="${72+i*7}" y2="65" stroke="${M}" stroke-width="0.8" opacity="0.6"/>`;
+  h+=`<text x="90" y="79" text-anchor="middle" font-family="monospace" font-size="9" fill="${M}">+Q</text>`;
+
+  // Arrow to valve
+  h+=`<line x1="112" y1="55" x2="140" y2="55" stroke="${C}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+
+  // Valve symbol (bowtie)
+  h+=`<polygon points="140,48 155,55 140,62" fill="none" stroke="${M}" stroke-width="1.2"/>`;
+  h+=`<polygon points="155,48 140,55 155,62" fill="none" stroke="${M}" stroke-width="1.2"/>`;
+  h+=`<text x="147" y="79" text-anchor="middle" font-family="monospace" font-size="9" fill="${M}">ΔP</text>`;
+
+  // Arrow to drum
+  h+=`<line x1="155" y1="55" x2="182" y2="55" stroke="${C}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+
+  // Drum vessel
+  h+=`<rect x="182" y="20" width="78" height="70" fill="rgba(31,58,95,.5)" stroke="${C}" stroke-width="1.5" rx="4"/>`;
+
+  // Two-phase fill indicator
+  const liqFrac=1-psi;
+  const fillH=Math.round(liqFrac*66);
+  h+=`<rect x="183" y="${21+(66-fillH)}" width="76" height="${fillH}" fill="rgba(30,122,116,.25)" rx="0"/>`;
+  h+=`<line x1="183" y1="${21+(66-fillH)}" x2="259" y2="${21+(66-fillH)}" stroke="var(--teal-lt)" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`;
+
+  // Vapour outlet (top right)
+  h+=`<line x1="260" y1="35" x2="320" y2="35" stroke="${C}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+  h+=`<text x="325" y="32" font-family="monospace" font-size="10" fill="${C}">V, y</text>`;
+  h+=`<text x="325" y="43" font-family="monospace" font-size="9" fill="${M}">${sol.phase==='two-phase'?'y='+sol.y.toFixed(3):'—'}</text>`;
+  h+=`<text x="325" y="53" font-family="monospace" font-size="9" fill="${M}">V/F=${psi.toFixed(2)}</text>`;
+
+  // Liquid outlet (bottom right)
+  h+=`<line x1="260" y1="75" x2="320" y2="75" stroke="${C}" stroke-width="1.5" marker-end="url(#arr)"/>`;
+  h+=`<text x="325" y="72" font-family="monospace" font-size="10" fill="${C}">L, x</text>`;
+  h+=`<text x="325" y="83" font-family="monospace" font-size="9" fill="${M}">${sol.phase==='two-phase'?'x='+sol.x.toFixed(3):'—'}</text>`;
+  h+=`<text x="325" y="93" font-family="monospace" font-size="9" fill="${M}">L/F=${(1-psi).toFixed(2)}</text>`;
+
+  // Arrow marker def
+  const defs=`<defs><marker id="arr" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="${C}"/></marker></defs>`;
+  document.getElementById('schematic').innerHTML=defs+h;
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  RESULTS + DOF PANEL
+// ════════════════════════════════════════════════════════════════════════
+function updateResults(){
+  if(!VLE)return;
+  const {xF,psi}=P, sol=solveFlash(VLE,xF,psi);
+  const sys=SYSTEMS[sysIdx];
+
+  document.getElementById('r-x').textContent  = sol.phase==='two-phase'?sol.x.toFixed(3):(sol.phase==='liquid'?sol.x.toFixed(3):'—');
+  document.getElementById('r-y').textContent  = sol.phase==='two-phase'?sol.y.toFixed(3):(sol.phase==='vapour'?sol.y.toFixed(3):'—');
+  document.getElementById('r-lf').textContent = (1-psi).toFixed(3);
+  document.getElementById('r-vf').textContent = psi.toFixed(3);
+
+  const dot=document.getElementById('phase-dot');
+  const txt=document.getElementById('phase-txt');
+  if(sol.phase==='two-phase'){
+    dot.style.background='var(--gold)';
+    txt.textContent=`Two-phase equilibrium  ·  x = ${sol.x.toFixed(3)}, y = ${sol.y.toFixed(3)}`;
+  } else if(sol.phase==='liquid'){
+    dot.style.background='var(--teal-lt)';
+    txt.textContent='All liquid — V/F = 0 limit (operating line is vertical)';
+  } else {
+    dot.style.background='var(--muted)';
+    txt.textContent='All vapour — V/F = 1 limit (operating line is horizontal)';
+  }
+
+  // DoF panel values
+  document.getElementById('dof-anchor').textContent=`z = ${xF.toFixed(3)}`;
+  const LV_str=sol.phase==='two-phase'?'−'+sol.LV.toFixed(3):(sol.phase==='liquid'?'−∞':'0');
+  document.getElementById('dof-slope').textContent=LV_str;
+  document.getElementById('dof-x').textContent=sol.phase==='two-phase'?sol.x.toFixed(3):'—';
+  document.getElementById('dof-y').textContent=sol.phase==='two-phase'?sol.y.toFixed(3):'—';
+
+  // Warnings
+  const w=document.getElementById('warn');
+  const warns=[];
+  if(sys.xAz&&xF>=sys.xAz-0.005)warns.push(`z<sub>F</sub> ≥ azeotrope (${sys.xAz}) — ordinary distillation cannot exceed this composition`);
+  w.innerHTML=warns.join('<br>');
+  w.classList.toggle('on',warns.length>0);
+}
+
+function regenVLE(){
+  const sys=SYSTEMS[sysIdx];
+  if(sys.id==='cu'){
+    try{
+      sys.antA={A:+document.getElementById('ant-Aa').value,
+                B:+document.getElementById('ant-Ba').value,
+                C:+document.getElementById('ant-Ca').value};
+      sys.antB={A:+document.getElementById('ant-Ab').value,
+                B:+document.getElementById('ant-Bb').value,
+                C:+document.getElementById('ant-Cb').value};
+    }catch(e){}
+  }
+  VLE=genVLE(sys,P.pressure||101.325);
+  const errEl=document.getElementById('antErr');
+  if(!VLE){errEl.textContent='Invalid Antoine constants — A must be more volatile than B';errEl.classList.add('show');}
+  else{errEl.classList.remove('show');}
+}
+
+function redrawAll(){
+  drawDiagram();
+  drawSchematic();
+  updateResults();
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  UI STATE
+// ════════════════════════════════════════════════════════════════════════
+function setParam(key,val){
+  P[key]=val;
+  const slEl=document.getElementById('sl-'+key),vEl=document.getElementById('v-'+key);
+  if(slEl)slEl.value=val;
+  if(vEl)vEl.value=val.toFixed(key==='xF'?3:3);
+  redrawAll();
+}
+
+function loadSys(i){
+  sysIdx=i;
+  const sys=SYSTEMS[i];
+  P={...sys.def};
+  // Adjust xF max for azeotropic systems
+  const xFsl=document.getElementById('sl-xF');
+  xFsl.max=sys.xAz?(sys.xAz-0.01).toFixed(3):'0.90';
+  if(P.xF>+(xFsl.max))P.xF=sys.def.xF;
+  document.getElementById('sl-xF').value=P.xF;
+  document.getElementById('v-xF').value=P.xF.toFixed(3);
+  document.getElementById('sl-vf').value=P.psi;
+  document.getElementById('v-vf').value=P.psi.toFixed(3);
+  document.getElementById('antWrap').classList.toggle('show',sys.id==='cu');
+  document.querySelectorAll('.pre-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  regenVLE();
+  redrawAll();
+}
+
+function onAntChange(){regenVLE();redrawAll();}
+function redrawAll2(){redrawAll();} // alias for unit toggle
+
+// ════════════════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════════════════
+loadSys(0);
+</script>
+</body>
+</html>

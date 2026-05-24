@@ -180,7 +180,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 
 <header>
   <div class="hd-title">MCCABE–THIELE</div>
-  <div class="hd-mid">01202311 · UNIT OPERATIONS II · BINARY DISTILLATION</div>
+  <div class="hd-mid">01202311 · UNIT OPERATIONS II · TOTAL CONDENSER · CMO ASSUMED</div>
   <div class="hd-extra">
     <div class="utog">
       SI
@@ -430,6 +430,46 @@ function lerp1(arr, xv, col) {
 function antVP(a, T) { return Math.pow(10, a.A - a.B/(T+a.C)); } // mmHg
 function antBP(a, P_mmHg) { return a.B/(a.A-Math.log10(P_mmHg))-a.C; }
 
+
+// ── PCHIP monotone cubic interpolation ───────────────────────────────────────
+// Used for tabulated VLE data (methanol-water, ethanol-water) to produce
+// smooth curves without jagged segments between sparse data points.
+function buildPchip(xs, ys) {
+  const n = xs.length;
+  if (n < 2) return () => ys[0];
+  const h = [], s = [];
+  for (let i = 0; i < n-1; i++) {
+    h[i] = xs[i+1] - xs[i];
+    s[i] = (ys[i+1] - ys[i]) / h[i];
+  }
+  const d = new Array(n).fill(0);
+  // Interior slopes: weighted harmonic mean (preserves monotonicity)
+  for (let i = 1; i < n-1; i++) {
+    if (s[i-1] * s[i] <= 0) { d[i] = 0; }
+    else {
+      const w1 = 2*h[i]+h[i-1], w2 = h[i]+2*h[i-1];
+      d[i] = (w1+w2) / (w1/s[i-1] + w2/s[i]);
+    }
+  }
+  // Endpoint slopes (one-sided, clamped)
+  const ep = (sa, sb, ha, hb) => {
+    const e = ((2*ha+hb)*sa - ha*sb) / (ha+hb);
+    return Math.sign(e) !== Math.sign(sa) ? 0 : Math.abs(e) > 3*Math.abs(sa) ? 3*sa : e;
+  };
+  d[0]   = n>2 ? ep(s[0],   s[1],   h[0],   h[1])   : s[0];
+  d[n-1] = n>2 ? ep(s[n-2], s[n-3]||s[n-2], h[n-2], h[n-3]||h[n-2]) : s[n-2];
+  // Evaluate at query x
+  return function(x) {
+    if (x <= xs[0])   return ys[0];
+    if (x >= xs[n-1]) return ys[n-1];
+    let lo=0, hi=n-2;
+    while(hi-lo>1){const m=(lo+hi)>>1; xs[m]<=x?lo=m:hi=m;}
+    const hk=h[lo], t=(x-xs[lo])/hk, t2=t*t, t3=t2*t;
+    return (2*t3-3*t2+1)*ys[lo] + (t3-2*t2+t)*hk*d[lo] +
+           (-2*t3+3*t2)*ys[lo+1] + (t3-t2)*hk*d[lo+1];
+  };
+}
+
 function genVLE(sys, P_kPa) {
   const N = 350, pts = [];
   const xMax = sys.xMax || 1.0;
@@ -448,10 +488,13 @@ function genVLE(sys, P_kPa) {
       pts.push({x:xc, y:yc, T, alpha});
     }
   } else if (sys.type === 'tabxy') {
+    // Use PCHIP for smooth curves between tabulated data points
+    const rawXs=sys.raw.map(r=>r[0]), rawYs=sys.raw.map(r=>r[1]), rawTs=sys.raw.map(r=>r[2]);
+    const iY=buildPchip(rawXs,rawYs), iT=buildPchip(rawXs,rawTs);
     for (let i = 0; i <= N; i++) {
       const x = i/N*xMax;
-      const y = lerp1(sys.raw, x, 1);
-      const T = lerp1(sys.raw, x, 2);
+      const y = Math.max(0,Math.min(1,iY(x)));
+      const T = iT(x);
       const alpha = x>0.002&&x<xMax-0.002 ? (y/(1-y))/(x/(1-x)) : null;
       pts.push({x, y, T, alpha});
     }
