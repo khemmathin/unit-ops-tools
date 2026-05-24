@@ -81,6 +81,14 @@ header{display:flex;align-items:center;justify-content:space-between;
 .sl-lbl em{font-style:normal;color:var(--cream)}
 .sl-val{font-family:var(--mono);font-size:14px;color:var(--cream);text-align:right}
 .sl-locked{opacity:.35;pointer-events:none}
+input.sl-val{font-family:var(--mono);font-size:14px;color:var(--cream);
+  text-align:right;width:46px;background:transparent;border:none;
+  border-bottom:1px solid rgba(255,255,255,.15);outline:none;padding:0;
+  -moz-appearance:textfield}
+input.sl-val::-webkit-outer-spin-button,
+input.sl-val::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input.sl-val:focus{border-bottom-color:var(--orange);color:var(--orange)}
+input.sl-val.sl-punit::after{content:'kPa'}
 input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;
   background:var(--navy-mid);border-radius:2px;outline:none;cursor:pointer}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
@@ -240,27 +248,27 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
     <div class="sl-row">
       <div class="sl-lbl"><em>x</em><sub>F</sub></div>
       <input type="range" id="sl-xF" min="0.05" max="0.90" step="0.005" value="0.45" oninput="setP('xF',+this.value)">
-      <div class="sl-val" id="v-xF">0.45</div>
+      <input type="number" class="sl-val" id="v-xF" value="0.45" min="0.05" max="0.90" step="0.001" onchange="setP('xF',clamp(+this.value,0.05,0.90))">
     </div>
     <div class="sl-row">
       <div class="sl-lbl"><em>x</em><sub>D</sub></div>
       <input type="range" id="sl-xD" min="0.50" max="0.999" step="0.005" value="0.95" oninput="setP('xD',+this.value)">
-      <div class="sl-val" id="v-xD">0.95</div>
+      <input type="number" class="sl-val" id="v-xD" value="0.95" min="0.50" max="0.999" step="0.001" onchange="setP('xD',clamp(+this.value,0.50,0.999))">
     </div>
     <div class="sl-row">
       <div class="sl-lbl"><em>x</em><sub>B</sub></div>
       <input type="range" id="sl-xB" min="0.001" max="0.45" step="0.005" value="0.10" oninput="setP('xB',+this.value)">
-      <div class="sl-val" id="v-xB">0.10</div>
+      <input type="number" class="sl-val" id="v-xB" value="0.10" min="0.001" max="0.45" step="0.001" onchange="setP('xB',clamp(+this.value,0.001,0.45))">
     </div>
     <div class="sl-row">
       <div class="sl-lbl"><em>R</em></div>
       <input type="range" id="sl-R" min="0.1" max="12" step="0.05" value="4.0" oninput="setP('R',+this.value)">
-      <div class="sl-val" id="v-R">4.00</div>
+      <input type="number" class="sl-val" id="v-R" value="4.00" min="0.1" max="12" step="0.01" onchange="setP('R',clamp(+this.value,0.1,12))">
     </div>
     <div class="sl-row" id="sl-P-row">
-      <div class="sl-lbl"><em>P</em></div>
-      <input type="range" id="sl-P" min="20" max="400" step="5" value="101" oninput="setP('pressure',+this.value)">
-      <div class="sl-val" id="v-P">101 kPa</div>
+      <div class="sl-lbl" style="line-height:1.2"><em>P</em><br><span style="font-size:9px;color:var(--muted)">kPa</span></div>
+      <input type="range" id="sl-P" min="20" max="400" step="1" value="101" oninput="setP('pressure',+this.value)">
+      <input type="number" class="sl-val" id="v-P" value="101" min="20" max="400" step="0.1" onchange="setP('pressure',clamp(+this.value,20,400))" title="kPa">
     </div>
   </div>
 
@@ -268,8 +276,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
   <div class="q-wrap">
     <div class="sl-row">
       <div class="sl-lbl"><em>q</em></div>
-      <input type="range" id="sl-q" min="-0.5" max="1.5" step="0.05" value="1.2" oninput="setQ(+this.value)">
-      <div class="sl-val" id="v-q">1.20</div>
+      <input type="range" id="sl-q" min="-0.5" max="1.5" step="0.01" value="1.2" oninput="setQ(+this.value)">
+      <input type="number" class="sl-val" id="v-q" value="1.20" min="-0.5" max="1.5" step="0.001" onchange="setQ(clamp(+this.value,-0.5,1.5))">
     </div>
     <div class="q-desc" id="q-desc"></div>
   </div>
@@ -399,6 +407,7 @@ const SYSTEMS = [
 let sysIdx = 0;
 let P = {...SYSTEMS[0].def};
 let VLE = null;   // {pts:[{x,y,T,alpha}], revPts:[{x,y,T}], xMax}
+const clamp=(v,mn,mx)=>Math.max(mn,Math.min(mx,isNaN(v)?mn:v));
 let C   = null;   // computed result
 let nShown = 0;
 
@@ -892,13 +901,20 @@ function setP(key,val){
   if(key==='xF'){
     P.xF=Math.max(P.xB+0.05,Math.min(P.xD-0.05,val));
     document.getElementById('sl-xF').value=P.xF;
+    document.getElementById('v-xF').value=P.xF.toFixed(3);
   }
+  // sync slider position for all params when input box is used
+  const slEl=document.getElementById('sl-'+key);
+  if(slEl&&key!=='xF') slEl.value=val;
   // Update display label
   if(key==='pressure'){
-    const useSI=!document.getElementById('unitTog').checked;
-    document.getElementById('v-P').textContent=useSI?`${val} kPa`:`${(val*7.50062).toFixed(0)} mmHg`;
+    document.getElementById('v-P').value=val.toFixed(1);
   } else {
-    document.getElementById('v-'+key).textContent=val.toFixed(2);
+    // sync number input (value=) not textContent
+  if (key !== 'pressure') {
+    const el=document.getElementById('v-'+key);
+    if(el) el.value=val.toFixed(key==='R'?2:3);
+  }
   }
   // Regen VLE only if pressure changed (and not fixed system)
   if(key==='pressure') { regenVLE(); }
@@ -907,7 +923,8 @@ function setP(key,val){
 
 function setQ(val){
   P.q=val;
-  document.getElementById('v-q').textContent=val.toFixed(2);
+  document.getElementById('v-q').value=val.toFixed(3);
+  document.getElementById('sl-q').value=val;
   document.getElementById('q-desc').innerHTML=qDesc(val);
   fullRedraw();
 }
@@ -923,13 +940,13 @@ function loadSys(i){
   // Update slider values
   ['xF','xD','xB','R'].forEach(k=>{
     document.getElementById('sl-'+k).value=P[k];
-    document.getElementById('v-'+k).textContent=P[k].toFixed(2);
+    document.getElementById('v-'+k).value=P[k].toFixed(k==='R'?2:3);
   });
   document.getElementById('sl-q').value=P.q;
-  document.getElementById('v-q').textContent=P.q.toFixed(2);
+  document.getElementById('v-q').value=P.q.toFixed(3);
   document.getElementById('q-desc').innerHTML=qDesc(P.q);
   document.getElementById('sl-P').value=P.pressure||101;
-  document.getElementById('v-P').textContent=`${P.pressure||101} kPa`;
+  document.getElementById('v-P').value=(P.pressure||101).toFixed(1);
   // Show/hide Antoine fields
   document.getElementById('antWrap').classList.toggle('show',sys.id==='cu');
   // Lock/unlock pressure slider
@@ -945,8 +962,7 @@ function onAntChange(){
 
 function redrawDisplay(){
   drawAlpha(); // unit toggle only needs to redraw table and pressure label
-  const useSI=!document.getElementById('unitTog').checked;
-  document.getElementById('v-P').textContent=useSI?`${P.pressure||101} kPa`:`${((P.pressure||101)*7.50062).toFixed(0)} mmHg`;
+  document.getElementById('v-P').value=(P.pressure||101).toFixed(1);
 }
 
 function stepOne()    {if(!C||!C.valid)return;if(nShown<C.stages.length){nShown++;drawDiagram();updateDisplay();}}
