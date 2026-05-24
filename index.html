@@ -7,274 +7,283 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ── 1.5 × original font sizes throughout ─────────────────────────────── */
-:root {
-  --ink:       #0f1d2e;
-  --navy:      #1f3a5f;
-  --navy-mid:  #2c4d77;
-  --navy-lt:   #3d6494;
-  --cream:     #f5f2eb;
-  --orange:    #c84b2f;
-  --orange-lt: #d4603f;
-  --green:     #2a7a50;
-  --purple:    #6b42a8;
-  --gold:      #c8962f;
-  --gold-lt:   #e8b840;
-  --muted:     #7a8fa6;
-  --mono: 'IBM Plex Mono','Courier New',monospace;
-  --sans: 'IBM Plex Sans',system-ui,sans-serif;
+:root{
+  --ink:#0f1d2e;--navy:#1f3a5f;--navy-mid:#2c4d77;--navy-lt:#3d6494;
+  --cream:#f5f2eb;--orange:#c84b2f;--orange-lt:#d4603f;
+  --green:#2a7a50;--purple:#6b42a8;--gold-lt:#e8b840;--muted:#7a8fa6;
+  --mono:'IBM Plex Mono','Courier New',monospace;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{
-  background:var(--ink);color:var(--cream);
-  font-family:var(--sans);
-  font-size:15px;   /* 13px × 1.5 ≈ 15px (base) */
-  display:flex;flex-direction:column;min-height:100vh;
-}
+body{background:var(--ink);color:var(--cream);font-family:var(--sans);
+  font-size:15px;display:flex;flex-direction:column;min-height:100vh}
 
-/* ── HEADER ──────────────────────────────────────────────────── */
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 20px;background:var(--navy);
-  border-bottom:1px solid var(--navy-mid);flex-shrink:0;
-}
-.hd-title{font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.08em}
-.hd-mid  {font-family:var(--mono);font-size:15px;color:var(--muted);letter-spacing:.04em}
-.hd-right{font-family:var(--mono);font-size:15px;color:var(--orange)}
+/* ── HEADER ─────────────────────────────────────────── */
+header{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 18px;background:var(--navy);
+  border-bottom:1px solid var(--navy-mid);flex-shrink:0}
+.hd-title{font-family:var(--mono);font-size:17px;font-weight:600;letter-spacing:.08em}
+.hd-mid{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.hd-right{font-family:var(--mono);font-size:12px;color:var(--orange)}
+.hd-extra{display:flex;align-items:center;gap:14px}
+/* unit toggle */
+.utog{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.tsw{position:relative;width:34px;height:18px;cursor:pointer;flex-shrink:0}
+.tsw input{opacity:0;width:0;height:0;position:absolute}
+.ttr{position:absolute;inset:0;background:var(--navy-mid);border-radius:9px;transition:background .2s}
+.tsw input:checked+.ttr{background:var(--orange)}
+.tth{position:absolute;top:3px;left:3px;width:12px;height:12px;background:#fff;
+  border-radius:50%;transition:transform .2s;pointer-events:none}
+.tsw input:checked~.tth{transform:translateX(16px)}
 
-/* ── APP GRID ────────────────────────────────────────────────── */
-.app{
-  display:grid;
-  grid-template-columns:510px 1fr;  /* wide enough for longest preset sub-label */
-  flex:1;overflow:hidden;min-height:0;
-}
+/* ── APP LAYOUT ──────────────────────────────────────── */
+.app{display:grid;grid-template-columns:510px 1fr;
+  flex:1;overflow:hidden;min-height:0}
 
-/* ── LEFT PANEL ──────────────────────────────────────────────── */
-.panel{
-  background:var(--navy);
-  border-right:1px solid var(--navy-mid);
-  display:flex;flex-direction:column;
-  overflow-y:auto;overflow-x:hidden;
-}
-
-.sec{
-  font-family:var(--mono);
-  font-size:13px;      /* 9px × 1.5 */
-  font-weight:600;letter-spacing:.12em;color:var(--orange);
-  text-transform:uppercase;
-  padding:9px 15px 5px;border-top:1px solid var(--navy-mid);
-}
+/* ── PANEL ───────────────────────────────────────────── */
+.panel{background:var(--navy);border-right:1px solid var(--navy-mid);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden}
+.sec{font-family:var(--mono);font-size:11px;font-weight:600;
+  letter-spacing:.12em;color:var(--orange);text-transform:uppercase;
+  padding:9px 14px 5px;border-top:1px solid var(--navy-mid)}
 .sec:first-child{border-top:none}
 
-/* Presets */
-.presets{padding:4px 15px 8px;display:flex;flex-direction:column;gap:4px}
-.pre-btn{
-  background:rgba(255,255,255,.03);border:1px solid var(--navy-mid);
-  color:var(--cream);font-family:var(--mono);
-  font-size:15px;    /* 10px × 1.5 */
-  padding:7px 10px;cursor:pointer;text-align:left;line-height:1.5;transition:all .12s;
-}
+/* presets */
+.presets{padding:3px 14px 7px;display:flex;flex-direction:column;gap:3px}
+.pre-btn{background:rgba(255,255,255,.03);border:1px solid var(--navy-mid);
+  color:var(--cream);font-family:var(--mono);font-size:13px;
+  padding:6px 9px;cursor:pointer;text-align:left;line-height:1.5;transition:all .12s}
 .pre-btn:hover{background:var(--navy-mid);border-color:var(--navy-lt)}
 .pre-btn.active{border-color:var(--orange);color:var(--orange)}
-.pre-sub{color:var(--muted);font-size:12px;display:block}  /* 9px × 1.5 */
+.pre-sub{color:var(--muted);font-size:10.5px;display:block}
 
-/* Sliders — all 5 individual full-width rows */
-.sliders{padding:4px 15px 8px;display:flex;flex-direction:column;gap:5px}
-.sl-row{display:grid;grid-template-columns:38px 1fr 48px;align-items:center;gap:7px}
-.sl-lbl{font-family:var(--mono);font-size:16px;color:var(--muted)}  /* 11px × 1.5 */
+/* custom Antoine fields */
+.ant-wrap{padding:2px 14px 8px;display:none;flex-direction:column;gap:7px}
+.ant-wrap.show{display:flex}
+.ant-grp-lbl{font-family:var(--mono);font-size:10px;color:var(--orange);
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.ant-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.ant-f{display:flex;flex-direction:column;gap:2px}
+.ant-f label{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.ant-f input{background:var(--ink);border:1px solid var(--navy-mid);
+  color:var(--cream);font-family:var(--mono);font-size:11px;
+  padding:3px 5px;width:100%;outline:none}
+.ant-f input:focus{border-color:var(--orange)}
+.ant-note{font-family:var(--mono);font-size:10px;color:var(--muted);font-style:italic}
+.ant-err{font-family:var(--mono);font-size:11px;color:#ffaaaa;display:none}
+.ant-err.show{display:block}
+
+/* sliders */
+.sliders{padding:3px 14px 7px;display:flex;flex-direction:column;gap:5px}
+.sl-row{display:grid;grid-template-columns:36px 1fr 46px;align-items:center;gap:6px}
+.sl-lbl{font-family:var(--mono);font-size:14px;color:var(--muted)}
 .sl-lbl em{font-style:normal;color:var(--cream)}
-.sl-val{font-family:var(--mono);font-size:16px;color:var(--cream);text-align:right}
+.sl-val{font-family:var(--mono);font-size:14px;color:var(--cream);text-align:right}
+.sl-locked{opacity:.35;pointer-events:none}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;
+  background:var(--navy-mid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--orange);cursor:pointer;border:2px solid var(--cream)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+  background:var(--orange);cursor:pointer;border:2px solid var(--cream);box-shadow:none}
 
-input[type=range]{
-  width:100%;height:4px;-webkit-appearance:none;appearance:none;
-  background:var(--navy-mid);border-radius:2px;outline:none;cursor:pointer;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:15px;height:15px;border-radius:50%;
-  background:var(--orange);cursor:pointer;border:2px solid var(--cream);
-}
-input[type=range]::-moz-range-thumb{
-  width:15px;height:15px;border-radius:50%;
-  background:var(--orange);cursor:pointer;border:2px solid var(--cream);box-shadow:none;
-}
-
-/* Feed condition — slider + live description */
-.q-wrap{padding:4px 15px 10px;display:flex;flex-direction:column;gap:7px}
-.q-desc{
-  font-family:var(--mono);
-  font-size:12px;    /* small but readable */
-  color:var(--muted);line-height:1.65;
-  border-left:2px solid var(--orange);
-  padding-left:9px;
-}
+/* feed condition */
+.q-wrap{padding:3px 14px 9px;display:flex;flex-direction:column;gap:6px}
+.q-desc{font-family:var(--mono);font-size:11px;color:var(--muted);
+  line-height:1.65;border-left:2px solid var(--orange);padding-left:8px}
 .q-desc strong{color:var(--cream);font-weight:600}
 
-/* Warning */
-.warn{
-  margin:0 15px 7px;padding:6px 10px;
+/* warning */
+.warn{margin:0 14px 6px;padding:6px 9px;
   background:rgba(160,30,30,.25);border:1px solid rgba(200,60,60,.5);
-  font-family:var(--mono);font-size:14px;color:#ffaaaa;display:none;
-}
+  font-family:var(--mono);font-size:12px;color:#ffaaaa;display:none}
 .warn.on{display:block}
 
-/* Results — 3 columns */
-.results{padding:4px 15px 8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
-.res{background:var(--ink);border:1px solid var(--navy-mid);padding:6px 8px}
-.res-lbl{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
-.res-val{font-family:var(--mono);font-size:27px;font-weight:600;color:var(--gold-lt);line-height:1}  /* 18px × 1.5 */
+/* results */
+.results{padding:3px 14px 7px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.res{background:var(--ink);border:1px solid var(--navy-mid);padding:5px 7px}
+.res-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.05em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+.res-val{font-family:var(--mono);font-size:22px;font-weight:600;
+  color:var(--gold-lt);line-height:1}
 
-/* Build controls */
-.btns{padding:4px 15px 6px;display:flex;gap:5px}
-.btn{
-  flex:1;padding:8px 4px;
-  font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:.07em;  /* 10px × 1.5 */
-  cursor:pointer;border:1px solid;transition:all .12s;
-}
+/* build */
+.btns{padding:3px 14px 5px;display:flex;gap:5px}
+.btn{flex:1;padding:7px 3px;font-family:var(--mono);font-size:13px;
+  font-weight:600;letter-spacing:.07em;cursor:pointer;border:1px solid;transition:all .12s}
 .btn-p{background:var(--orange);border-color:var(--orange);color:#fff}
 .btn-p:hover{background:var(--orange-lt)}
 .btn-s{background:transparent;border-color:var(--navy-lt);color:var(--cream)}
 .btn-s:hover{background:var(--navy-mid)}
 .btn-g{background:transparent;border-color:var(--navy-mid);color:var(--muted)}
 .btn-g:hover{border-color:var(--navy-lt);color:var(--cream)}
+.kbd-hint{padding:0 14px 9px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.kbd{background:var(--navy-mid);border:1px solid var(--navy-lt);
+  padding:1px 5px;border-radius:2px;color:var(--cream)}
 
-.kbd-hint{
-  padding:0 15px 10px;font-family:var(--mono);
-  font-size:13px;color:var(--muted);  /* 9px × 1.5 */
-}
-.kbd{
-  background:var(--navy-mid);border:1px solid var(--navy-lt);
-  padding:1px 5px;border-radius:2px;color:var(--cream);
-}
-
-/* ── DIAGRAM AREA ─────────────────────────────────────────────── */
+/* ── DIAGRAM AREA ────────────────────────────────────── */
 .diagram-area{display:flex;flex-direction:column;background:var(--ink);overflow:hidden}
-.diagram-wrap{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  padding:10px 10px 4px;min-height:0;
-}
+.diagram-wrap{flex:1;display:flex;align-items:center;justify-content:center;
+  padding:10px 10px 4px;min-height:0}
 #diagram{max-height:100%;width:auto;display:block;max-width:720px}
 
-.legend{
-  display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:0 12px 4px;
-}
-.leg{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:13px;color:var(--muted)}
-.leg-line{width:20px;height:2px;flex-shrink:0;border-radius:1px}
-.leg-dash{width:20px;height:0;flex-shrink:0;border-top:2px dashed}
+.legend{display:flex;gap:13px;flex-wrap:wrap;justify-content:center;padding:0 10px 4px}
+.leg{display:flex;align-items:center;gap:5px;font-family:var(--mono);
+  font-size:11px;color:var(--muted)}
+.leg-line{width:18px;height:2px;flex-shrink:0;border-radius:1px}
+.leg-dash{width:18px;height:0;flex-shrink:0;border-top:2px dashed}
 
-/* Sensitivity */
-.sens-wrap{
-  border-top:1px solid var(--navy-mid);background:var(--navy);
-  padding:7px 18px 9px;flex-shrink:0;
+/* sensitivity */
+.sens-wrap{border-top:1px solid var(--navy-mid);background:var(--navy);
+  padding:6px 16px 8px;flex-shrink:0}
+.panel-ttl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  color:var(--orange);text-transform:uppercase;margin-bottom:4px}
+#sensChart{width:100%;height:90px;display:block}
+
+/* alpha table */
+.alpha-wrap{border-top:1px solid var(--navy-mid);padding:6px 16px 10px;flex-shrink:0}
+.atbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px}
+.atbl th{color:var(--muted);font-weight:500;letter-spacing:.05em;
+  text-align:right;padding:2px 7px;border-bottom:1px solid var(--navy-mid)}
+.atbl th:first-child,.atbl td:first-child{text-align:left}
+.atbl td{text-align:right;padding:2px 7px;color:var(--cream)}
+.atbl tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+.td-a{color:var(--gold-lt)}
+.td-az{color:var(--orange);font-weight:600}
+.alpha-src{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:1099px){
+  .app{grid-template-columns:290px 1fr}
+  .pre-btn{font-size:11px}.pre-sub{font-size:9.5px}
+  .sl-lbl,.sl-val{font-size:12px}.res-val{font-size:18px}
+  .btn{font-size:11px}.hd-mid{display:none}
 }
-.sens-title{font-family:var(--mono);font-size:13px;letter-spacing:.08em;color:var(--orange);text-transform:uppercase;margin-bottom:4px}
-#sensChart{width:100%;height:110px;display:block}
+@media(max-width:699px){
+  .app{display:flex;flex-direction:column;overflow:visible}
+  .panel{overflow-y:visible;height:auto;order:2}
+  .diagram-area{order:1;min-height:360px}
+  body{overflow-y:auto}
+}
 </style>
 </head>
-
 <body>
+
 <header>
-  <div class="hd-title">MCCABE–THIELE CONSTRUCTION</div>
-  <div class="hd-mid">01202311 · UNIT OPERATIONS II · CONSTANT α · TOTAL CONDENSER</div>
-  <div class="hd-right">KU DEPT. CHEM. ENG.</div>
+  <div class="hd-title">MCCABE–THIELE</div>
+  <div class="hd-mid">01202311 · UNIT OPERATIONS II · BINARY DISTILLATION</div>
+  <div class="hd-extra">
+    <div class="utog">
+      SI
+      <label class="tsw">
+        <input type="checkbox" id="unitTog" onchange="redrawDisplay()">
+        <div class="ttr"></div><div class="tth"></div>
+      </label>
+      °F/psi
+    </div>
+    <div class="hd-right">KU DEPT. CHEM. ENG.</div>
+  </div>
 </header>
 
 <div class="app">
-
-<!-- ══ LEFT PANEL ═══════════════════════════════════════════════════ -->
 <aside class="panel">
 
-  <div class="sec">System Presets</div>
+  <div class="sec">System</div>
   <div class="presets">
-    <button class="pre-btn active" onclick="loadPreset(0)">
-      Benzene–Toluene &nbsp;α = 2.47
-      <span class="pre-sub">Geankoplis Ex 26.4-1 · subcooled feed q ≈ 1.2 ✓</span>
+    <button class="pre-btn active" onclick="loadSys(0)">
+      Benzene–Toluene &nbsp;α = 2.37–2.54
+      <span class="pre-sub">Geankoplis Table 26.1-1 · Raoult sweep · 1 atm · ideal ✓</span>
     </button>
-    <button class="pre-btn" onclick="loadPreset(1)">
-      Methanol–Water &nbsp;α ≈ 3.46
-      <span class="pre-sub">Rough mid-range avg — α varies 2.5 → 6.4 across composition ⚠</span>
+    <button class="pre-btn" onclick="loadSys(1)">
+      Methanol–Water &nbsp;α = 2.5–7.6
+      <span class="pre-sub">NIST / Gmehling DECHEMA · tabulated (x,y) · 1 atm · non-ideal ✓</span>
     </button>
-    <button class="pre-btn" onclick="loadPreset(2)">
-      n-Heptane / n-Octane &nbsp;α = 2.16
-      <span class="pre-sub">Near-ideal alkanes · constant-α is a good approximation ✓</span>
+    <button class="pre-btn" onclick="loadSys(2)">
+      Ethanol–Water &nbsp;azeotrope at x = 0.894
+      <span class="pre-sub">Chu et al. 1950 / NIST · tabulated (x,y) · 1 atm · lab system ✓</span>
     </button>
+    <button class="pre-btn" onclick="loadSys(3)">
+      n-Heptane / n-Octane &nbsp;α = 2.13–2.24
+      <span class="pre-sub">Antoine + Raoult (NIST constants) · pressure adjustable · near-ideal ✓</span>
+    </button>
+    <button class="pre-btn" onclick="loadSys(4)">
+      Custom System
+      <span class="pre-sub">Enter Antoine constants · log₁₀(P°/mmHg) = A−B/(T+C) · T in °C</span>
+    </button>
+  </div>
+
+  <!-- Antoine inputs for custom system -->
+  <div class="ant-wrap" id="antWrap">
+    <div>
+      <div class="ant-grp-lbl">Component A (more volatile)</div>
+      <div class="ant-row">
+        <div class="ant-f"><label>A</label><input id="ant-Aa" type="number" step="any" value="6.90253" oninput="onAntChange()"></div>
+        <div class="ant-f"><label>B</label><input id="ant-Ba" type="number" step="any" value="1267.828" oninput="onAntChange()"></div>
+        <div class="ant-f"><label>C</label><input id="ant-Ca" type="number" step="any" value="216.900" oninput="onAntChange()"></div>
+      </div>
+    </div>
+    <div>
+      <div class="ant-grp-lbl">Component B (less volatile)</div>
+      <div class="ant-row">
+        <div class="ant-f"><label>A</label><input id="ant-Ab" type="number" step="any" value="6.91868" oninput="onAntChange()"></div>
+        <div class="ant-f"><label>B</label><input id="ant-Bb" type="number" step="any" value="1351.756" oninput="onAntChange()"></div>
+        <div class="ant-f"><label>C</label><input id="ant-Cb" type="number" step="any" value="209.100" oninput="onAntChange()"></div>
+      </div>
+    </div>
+    <div class="ant-note">Defaults pre-filled with n-heptane (A) / n-octane (B)</div>
+    <div class="ant-err" id="antErr"></div>
   </div>
 
   <div class="sec">Parameters</div>
   <div class="sliders">
     <div class="sl-row">
-      <div class="sl-lbl"><em>α</em></div>
-      <input type="range" id="sl-alpha" min="1.05" max="8" step="0.01" value="2.47"
-             oninput="setP('alpha',+this.value)">
-      <div class="sl-val" id="v-alpha">2.47</div>
-    </div>
-    <div class="sl-row">
       <div class="sl-lbl"><em>x</em><sub>F</sub></div>
-      <input type="range" id="sl-xF" min="0.05" max="0.90" step="0.005" value="0.45"
-             oninput="setP('xF',+this.value)">
+      <input type="range" id="sl-xF" min="0.05" max="0.90" step="0.005" value="0.45" oninput="setP('xF',+this.value)">
       <div class="sl-val" id="v-xF">0.45</div>
     </div>
     <div class="sl-row">
       <div class="sl-lbl"><em>x</em><sub>D</sub></div>
-      <input type="range" id="sl-xD" min="0.50" max="0.999" step="0.005" value="0.95"
-             oninput="setP('xD',+this.value)">
+      <input type="range" id="sl-xD" min="0.50" max="0.999" step="0.005" value="0.95" oninput="setP('xD',+this.value)">
       <div class="sl-val" id="v-xD">0.95</div>
     </div>
     <div class="sl-row">
       <div class="sl-lbl"><em>x</em><sub>B</sub></div>
-      <input type="range" id="sl-xB" min="0.001" max="0.45" step="0.005" value="0.10"
-             oninput="setP('xB',+this.value)">
+      <input type="range" id="sl-xB" min="0.001" max="0.45" step="0.005" value="0.10" oninput="setP('xB',+this.value)">
       <div class="sl-val" id="v-xB">0.10</div>
     </div>
     <div class="sl-row">
       <div class="sl-lbl"><em>R</em></div>
-      <input type="range" id="sl-R" min="0.1" max="12" step="0.05" value="4.0"
-             oninput="setP('R',+this.value)">
+      <input type="range" id="sl-R" min="0.1" max="12" step="0.05" value="4.0" oninput="setP('R',+this.value)">
       <div class="sl-val" id="v-R">4.00</div>
+    </div>
+    <div class="sl-row" id="sl-P-row">
+      <div class="sl-lbl"><em>P</em></div>
+      <input type="range" id="sl-P" min="20" max="400" step="5" value="101" oninput="setP('pressure',+this.value)">
+      <div class="sl-val" id="v-P">101 kPa</div>
     </div>
   </div>
 
   <div class="sec">Feed Condition</div>
   <div class="q-wrap">
-    <!-- continuous q slider: -0.5 (superheated) → 1.5 (very subcooled) -->
     <div class="sl-row">
       <div class="sl-lbl"><em>q</em></div>
-      <input type="range" id="sl-q" min="-0.5" max="1.5" step="0.05" value="1.2"
-             oninput="setQ(+this.value)">
+      <input type="range" id="sl-q" min="-0.5" max="1.5" step="0.05" value="1.2" oninput="setQ(+this.value)">
       <div class="sl-val" id="v-q">1.20</div>
     </div>
-    <!-- live text description updates as slider moves -->
     <div class="q-desc" id="q-desc"></div>
   </div>
 
-  <div class="warn" id="warn">R &lt; R<sub>min</sub> — operating lines cross inside diagram</div>
+  <div class="warn" id="warn"></div>
 
   <div class="sec">Results</div>
   <div class="results">
-    <div class="res">
-      <div class="res-lbl">Shown</div>
-      <div class="res-val" id="r-shown">—</div>
-    </div>
-    <div class="res">
-      <div class="res-lbl">N theoretical</div>
-      <div class="res-val" id="r-n">—</div>
-    </div>
-    <div class="res">
-      <div class="res-lbl">Feed tray</div>
-      <div class="res-val" id="r-feed">—</div>
-    </div>
-    <div class="res">
-      <div class="res-lbl">R<sub>min</sub></div>
-      <div class="res-val" id="r-rmin">—</div>
-    </div>
-    <div class="res">
-      <div class="res-lbl">R / R<sub>min</sub></div>
-      <div class="res-val" id="r-rrmin">—</div>
-    </div>
-    <div class="res">
-      <div class="res-lbl">N<sub>min</sub></div>
-      <div class="res-val" id="r-nmin">—</div>
-    </div>
+    <div class="res"><div class="res-lbl">Shown</div><div class="res-val" id="r-shown">—</div></div>
+    <div class="res"><div class="res-lbl">N theoretical</div><div class="res-val" id="r-n">—</div></div>
+    <div class="res"><div class="res-lbl">Feed tray</div><div class="res-val" id="r-feed">—</div></div>
+    <div class="res"><div class="res-lbl">R<sub>min</sub></div><div class="res-val" id="r-rmin">—</div></div>
+    <div class="res"><div class="res-lbl">R / R<sub>min</sub></div><div class="res-val" id="r-rrmin">—</div></div>
+    <div class="res"><div class="res-lbl">N<sub>min</sub></div><div class="res-val" id="r-nmin">—</div></div>
   </div>
 
   <div class="sec">Build Stages</div>
@@ -291,140 +300,279 @@ input[type=range]::-moz-range-thumb{
 
 </aside>
 
-<!-- ══ DIAGRAM ══════════════════════════════════════════════════════════ -->
 <section class="diagram-area">
   <div class="diagram-wrap">
-    <!-- viewBox 720×640 → plot area ~1.25× the original 600×540 -->
     <svg id="diagram" viewBox="0 0 720 640" xmlns="http://www.w3.org/2000/svg"
          style="max-width:720px;width:100%;height:auto"></svg>
   </div>
   <div class="legend">
-    <div class="leg"><div class="leg-line" style="background:#4a6d8c;height:2.5px"></div>Equilibrium curve</div>
-    <div class="leg"><div class="leg-dash" style="border-color:#7a9ab4"></div>45° diagonal</div>
+    <div class="leg"><div class="leg-line" style="background:#4a6d8c;height:2.5px"></div>Eq. curve</div>
+    <div class="leg"><div class="leg-dash" style="border-color:#7a9ab4"></div>Diagonal</div>
     <div class="leg"><div class="leg-line" style="background:var(--orange)"></div>Enriching OL</div>
     <div class="leg"><div class="leg-line" style="background:var(--green)"></div>Stripping OL</div>
     <div class="leg"><div class="leg-dash" style="border-color:var(--purple)"></div>q-line</div>
-    <div class="leg"><div class="leg-line" style="background:var(--gold-lt)"></div>Stage steps</div>
+    <div class="leg"><div class="leg-line" style="background:var(--gold-lt)"></div>Stages</div>
   </div>
   <div class="sens-wrap">
-    <div class="sens-title">N theoretical vs R / R<sub>min</sub> — sensitivity curve</div>
-    <svg id="sensChart" viewBox="0 0 900 110" xmlns="http://www.w3.org/2000/svg"
-         preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="panel-ttl">N theoretical vs R / R<sub>min</sub></div>
+    <svg id="sensChart" viewBox="0 0 900 90" preserveAspectRatio="xMidYMid meet"
+         xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div class="alpha-wrap">
+    <div class="panel-ttl" id="aTtl">α along the column</div>
+    <table class="atbl" id="aTbl"></table>
+    <div class="alpha-src" id="aSrc"></div>
   </div>
 </section>
-
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-//  PRESETS  (verified)
-// ═══════════════════════════════════════════════════════════════
-const PRESETS = [
-  { alpha:2.47, xF:0.45, xD:0.95, xB:0.10, R:4.0,  q:1.2  },
-  { alpha:3.46, xF:0.35, xD:0.90, xB:0.05, R:2.5,  q:1.0  },
-  { alpha:2.16, xF:0.50, xD:0.92, xB:0.08, R:3.5,  q:0.5  },
+// ═══════════════════════════════════════════════════════════════════════════
+//  VLE DATA
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Benzene-Toluene: Geankoplis Table 26.1-1 [T_C, PA_kPa, PB_kPa]
+// PB at 80.1°C extrapolated from 85-90 slope (→ 38.16 kPa, verified)
+const BT_DATA = [
+  [80.1, 101.32, 38.16],[85, 116.9, 46.0],[90, 135.5, 54.0],
+  [95, 155.7, 63.3],[100, 179.2, 74.3],[105, 204.2, 86.0],
+  [110.6, 240.0, 101.32]
 ];
 
-// ═══════════════════════════════════════════════════════════════
-//  Q DESCRIPTION  — updates live as slider moves
-// ═══════════════════════════════════════════════════════════════
-function qDesc(q) {
-  if (q > 1.005) {
-    const extra = (q - 1).toFixed(2);
-    return `<strong>Subcooled liquid</strong> — feed enters below its bubble point. Each mole of feed condenses ${extra} mol of rising vapour. q-line has steep positive slope <em>q/(q−1) = ${(q/(q-1)).toFixed(1)}</em>.`;
-  }
-  if (Math.abs(q - 1) < 0.025) {
-    return `<strong>Saturated liquid</strong> — feed enters exactly at its bubble point. No phase change on the feed tray. q-line is <em>vertical</em> at x = x<sub>F</sub>.`;
-  }
-  if (q > 0.005) {
-    const vf = (1 - q).toFixed(2);
-    return `<strong>Partially vaporised</strong> — feed is a vapour–liquid mixture; ${(q*100).toFixed(0)}% liquid, ${((1-q)*100).toFixed(0)}% vapour. q-line has <em>negative</em> slope ${(q/(q-1)).toFixed(2)}.`;
-  }
-  if (Math.abs(q) < 0.025) {
-    return `<strong>Saturated vapour</strong> — feed enters at its dew point. No liquid fraction in the feed. q-line is <em>horizontal</em> at y = x<sub>F</sub>.`;
-  }
-  return `<strong>Superheated vapour</strong> — feed is above dew point; provides sensible heat to the column. q-line has shallow positive slope ${(q/(q-1)).toFixed(2)} (between 0 and 1).`;
-}
+// Methanol-Water: NIST / Gmehling DECHEMA at 101.325 kPa [x, y, T_C]
+const MW_DATA = [
+  [0.000,0.000,100.00],[0.020,0.134,96.43],[0.040,0.230,93.55],
+  [0.060,0.304,91.18],[0.080,0.365,89.26],[0.100,0.418,87.68],
+  [0.150,0.517,84.42],[0.200,0.579,81.67],[0.300,0.665,77.96],
+  [0.400,0.729,75.29],[0.500,0.779,73.11],[0.600,0.825,71.29],
+  [0.700,0.870,69.68],[0.800,0.915,68.05],[0.900,0.958,66.35],
+  [1.000,1.000,64.53]
+];
 
-// ═══════════════════════════════════════════════════════════════
+// Ethanol-Water: Chu et al. (1950) / NIST at 101.325 kPa [x, y, T_C]
+// Azeotrope at x = y = 0.8943 (78.15°C). All points: y > x ✓
+const EW_DATA = [
+  [0.0000,0.0000,100.00],[0.0190,0.1700,95.50],[0.0721,0.3891,89.00],
+  [0.0966,0.4375,86.70],[0.1238,0.4704,85.30],[0.1661,0.5089,84.10],
+  [0.2337,0.5445,82.70],[0.2608,0.5580,82.00],[0.3273,0.5826,80.70],
+  [0.3965,0.6122,79.80],[0.5079,0.6564,79.70],[0.5198,0.6599,79.30],
+  [0.5732,0.6841,78.74],[0.6763,0.7385,78.41],[0.7472,0.7815,78.15],
+  [0.8943,0.8943,78.15]
+];
+
+// Antoine constants: log10(P/mmHg) = A - B/(T+C), T in °C  (NIST)
+const ANT_HEP = {A:6.90253,B:1267.828,C:216.900}; // n-heptane, bp 98.3°C ✓
+const ANT_OCT = {A:6.91868,B:1351.756,C:209.100}; // n-octane,  bp 125.7°C ✓
+
+// ── System definitions ────────────────────────────────────────────────────
+const SYSTEMS = [
+  { id:'bt',  name:'Benzene–Toluene',
+    type:'raoult_table', raw:BT_DATA, P_fixed:true, xMax:1.0,
+    src:'Geankoplis Table 26.1-1',
+    def:{xF:0.45,xD:0.95,xB:0.10,R:4.0,q:1.2,pressure:101}
+  },
+  { id:'mw',  name:'Methanol–Water',
+    type:'tabxy', raw:MW_DATA, P_fixed:true, xMax:1.0,
+    src:'NIST / Gmehling DECHEMA (2024)',
+    def:{xF:0.35,xD:0.90,xB:0.05,R:2.5,q:1.0,pressure:101}
+  },
+  { id:'ew',  name:'Ethanol–Water',
+    type:'tabxy', raw:EW_DATA, P_fixed:true, xMax:0.8943, xAz:0.8943,
+    src:'Chu et al. (1950) / NIST',
+    def:{xF:0.20,xD:0.80,xB:0.01,R:2.5,q:1.0,pressure:101}
+  },
+  { id:'ho',  name:'n-Heptane/n-Octane',
+    type:'antoine', antA:ANT_HEP, antB:ANT_OCT, P_fixed:false, xMax:1.0,
+    src:'Antoine + Raoult (NIST constants)',
+    def:{xF:0.50,xD:0.92,xB:0.08,R:3.5,q:0.5,pressure:101}
+  },
+  { id:'cu',  name:'Custom System',
+    type:'antoine', antA:{...ANT_HEP}, antB:{...ANT_OCT}, P_fixed:false, xMax:1.0,
+    src:'User-supplied Antoine constants',
+    def:{xF:0.50,xD:0.90,xB:0.08,R:3.0,q:1.0,pressure:101}
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
 //  STATE
-// ═══════════════════════════════════════════════════════════════
-let P = {...PRESETS[0]};
-let C = null;
+// ═══════════════════════════════════════════════════════════════════════════
+let sysIdx = 0;
+let P = {...SYSTEMS[0].def};
+let VLE = null;   // {pts:[{x,y,T,alpha}], revPts:[{x,y,T}], xMax}
+let C   = null;   // computed result
 let nShown = 0;
 
-// ═══════════════════════════════════════════════════════════════
-//  MATH
-// ═══════════════════════════════════════════════════════════════
-const eqY = (x,a) => a*x / (1+(a-1)*x);
-const eqX = (y,a) => y  / (a-(a-1)*y);
-
-function qLineEndpoints(q, xF) {
-  if (Math.abs(q-1) < 4e-3) return {x1:xF, y1:0,  x2:xF, y2:1,  vert:true};
-  if (Math.abs(q)   < 4e-3) return {x1:0,  y1:xF, x2:1,  y2:xF};
-  const m = q/(q-1), b = -xF/(q-1);
-  const cand = [];
-  const push = (x,y) => {
-    if (x>=-1e-9&&x<=1+1e-9&&y>=-1e-9&&y<=1+1e-9)
-      cand.push([Math.min(1,Math.max(0,x)), Math.min(1,Math.max(0,y))]);
-  };
-  push(0,b); push(1,m+b);
-  if (Math.abs(m)>1e-9) { push(-b/m, 0); push((1-b)/m, 1); }
-  cand.sort((a,b) => a[0]-b[0]);
-  const u = cand.filter((p,i) => i===0 || Math.hypot(p[0]-cand[i-1][0],p[1]-cand[i-1][1])>1e-4);
-  return u.length < 2
-    ? {x1:Math.max(0,xF-.3), y1:m*Math.max(0,xF-.3)+b, x2:Math.min(1,xF+.3), y2:m*Math.min(1,xF+.3)+b}
-    : {x1:u[0][0], y1:u[0][1], x2:u[u.length-1][0], y2:u[u.length-1][1]};
+// ═══════════════════════════════════════════════════════════════════════════
+//  VLE GENERATION
+// ═══════════════════════════════════════════════════════════════════════════
+function lerp1(arr, xv, col) {
+  // arr sorted by arr[i][0]; interpolate column col at xv
+  if (xv <= arr[0][0]) return arr[0][col];
+  if (xv >= arr[arr.length-1][0]) return arr[arr.length-1][col];
+  for (let i = 0; i < arr.length-1; i++) {
+    if (xv >= arr[i][0] && xv <= arr[i+1][0]) {
+      const t = (xv-arr[i][0])/(arr[i+1][0]-arr[i][0]);
+      return arr[i][col] + t*(arr[i+1][col]-arr[i][col]);
+    }
+  }
+  return arr[arr.length-1][col];
 }
 
-function intersect(alpha, xD, xB, R, q, xF) {
-  const me=R/(R+1), be=xD/(R+1);
+function antVP(a, T) { return Math.pow(10, a.A - a.B/(T+a.C)); } // mmHg
+function antBP(a, P_mmHg) { return a.B/(a.A-Math.log10(P_mmHg))-a.C; }
+
+function genVLE(sys, P_kPa) {
+  const N = 350, pts = [];
+  const xMax = sys.xMax || 1.0;
+
+  if (sys.type === 'raoult_table') {
+    const T0 = sys.raw[0][0], T1 = sys.raw[sys.raw.length-1][0];
+    for (let i = 0; i <= N; i++) {
+      const T = T0 + (T1-T0)*i/N;
+      const PA = lerp1(sys.raw, T, 1); // kPa
+      const PB = lerp1(sys.raw, T, 2); // kPa
+      if (PA <= PB+1e-6) continue;
+      const x = (P_kPa-PB)/(PA-PB), y = x*PA/P_kPa;
+      if (x < -1e-4 || x > 1+1e-4) continue;
+      const xc = Math.max(0,Math.min(1,x)), yc = Math.max(0,Math.min(1,y));
+      const alpha = xc>0.002&&xc<0.998 ? (yc/(1-yc))/(xc/(1-xc)) : null;
+      pts.push({x:xc, y:yc, T, alpha});
+    }
+  } else if (sys.type === 'tabxy') {
+    for (let i = 0; i <= N; i++) {
+      const x = i/N*xMax;
+      const y = lerp1(sys.raw, x, 1);
+      const T = lerp1(sys.raw, x, 2);
+      const alpha = x>0.002&&x<xMax-0.002 ? (y/(1-y))/(x/(1-x)) : null;
+      pts.push({x, y, T, alpha});
+    }
+  } else { // antoine
+    const P_mmHg = P_kPa*7.50062;
+    const T_A = antBP(sys.antA, P_mmHg), T_B = antBP(sys.antB, P_mmHg);
+    if (isNaN(T_A)||isNaN(T_B)||T_A>=T_B) return null;
+    for (let i = 0; i <= N; i++) {
+      const T = T_A + (T_B-T_A)*i/N;
+      const PA = antVP(sys.antA, T), PB = antVP(sys.antB, T);
+      if (PA <= PB+1e-6) continue;
+      const x = (P_mmHg-PB)/(PA-PB), y = x*PA/P_mmHg;
+      if (x < -1e-4 || x > 1+1e-4) continue;
+      const xc = Math.max(0,Math.min(1,x)), yc = Math.max(0,Math.min(1,y));
+      const alpha = xc>0.002&&xc<0.998 ? (yc/(1-yc))/(xc/(1-xc)) : null;
+      pts.push({x:xc, y:yc, T, alpha});
+    }
+  }
+  pts.sort((a,b) => a.x-b.x);
+  // reverse lookup sorted by y (clip to xMax for azeotropic systems)
+  const revPts = pts.filter(p => p.x <= xMax+1e-4).slice().sort((a,b) => a.y-b.y);
+  return {pts, revPts, xMax};
+}
+
+// ── Interpolation ─────────────────────────────────────────────────────────
+function eqY(vle, x) {
+  const pts = vle.pts;
+  if (x <= pts[0].x) return pts[0].y;
+  if (x >= pts[pts.length-1].x) return pts[pts.length-1].y;
+  let lo=0, hi=pts.length-1;
+  while (hi-lo>1) { const m=(lo+hi)>>1; if(pts[m].x<=x) lo=m; else hi=m; }
+  const t = (x-pts[lo].x)/(pts[hi].x-pts[lo].x);
+  return pts[lo].y + t*(pts[hi].y-pts[lo].y);
+}
+
+function eqX(vle, y) {
+  const pts = vle.revPts;
+  if (y <= pts[0].y) return pts[0].x;
+  if (y >= pts[pts.length-1].y) return pts[pts.length-1].x;
+  let lo=0, hi=pts.length-1;
+  while (hi-lo>1) { const m=(lo+hi)>>1; if(pts[m].y<=y) lo=m; else hi=m; }
+  const t = (y-pts[lo].y)/(pts[hi].y-pts[lo].y);
+  return pts[lo].x + t*(pts[hi].x-pts[lo].x);
+}
+
+function getT(vle, x) {
+  const pts = vle.pts;
+  if (x <= pts[0].x) return pts[0].T;
+  if (x >= pts[pts.length-1].x) return pts[pts.length-1].T;
+  let lo=0, hi=pts.length-1;
+  while (hi-lo>1) { const m=(lo+hi)>>1; if(pts[m].x<=x) lo=m; else hi=m; }
+  const t = (x-pts[lo].x)/(pts[hi].x-pts[lo].x);
+  return pts[lo].T + t*(pts[hi].T-pts[lo].T);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  CORE MATH
+// ═══════════════════════════════════════════════════════════════════════════
+function intersect(xD, xB, R, q, xF) {
+  const me = R/(R+1), be = xD/(R+1);
   if (Math.abs(q-1)<4e-3) return {xI:xF, yI:me*xF+be};
-  const mq=q/(q-1), bq=-xF/(q-1), d=mq-me;
+  if (Math.abs(q)<4e-3)   return {xI:(xF-be)/(me), yI:xF}; // approx
+  const mq = q/(q-1), bq = -xF/(q-1), d = mq-me;
   if (Math.abs(d)<1e-9) return {xI:xF, yI:me*xF+be};
-  const xI=(be-bq)/d;
+  const xI = (be-bq)/d;
   return {xI, yI:me*xI+be};
 }
 
-function pinch(alpha, xD, xB, q, xF) {
-  if (Math.abs(q-1)<4e-3) return {xP:xF, yP:eqY(xF,alpha)};
-  if (Math.abs(q)  <4e-3) return {xP:eqX(xF,alpha), yP:xF};
-  const mq=q/(q-1), bq=-xF/(q-1);
-  const A=(alpha-1)*mq, B=mq+bq*(alpha-1)-alpha, Cv=bq;
-  let xP;
-  if (Math.abs(A)<1e-10) {
-    xP = Math.abs(B)>1e-10 ? -Cv/B : xF;
-  } else {
-    const disc = B*B-4*A*Cv;
-    if (disc<0) { xP=xF; } else {
-      const r1=(-B+Math.sqrt(disc))/(2*A), r2=(-B-Math.sqrt(disc))/(2*A);
-      const v=[r1,r2].filter(v=>v>xB+1e-3&&v<xD-1e-3);
-      xP = v.length ? v[0] : xF;
+function findPinch(vle, xD, xB, q, xF) {
+  // Numerical: find q-line ∩ equilibrium curve via bisection
+  if (Math.abs(q-1)<4e-3) return {xP:xF, yP:eqY(vle,xF)};
+  if (Math.abs(q)<4e-3)   return {xP:eqX(vle,xF), yP:xF};
+  const mq = q/(q-1), bq = -xF/(q-1);
+  const f = x => eqY(vle,x) - (mq*x+bq);
+  // scan for sign change
+  let lo = xB+0.005, hi = xD-0.005;
+  let fLo = f(lo), fHi = f(hi);
+  if (fLo*fHi > 0) {
+    // scan finer
+    for (let xi = lo+0.01; xi < hi; xi += 0.01) {
+      const fi = f(xi);
+      if (fi*fLo < 0) { hi = xi; fHi = fi; break; }
+      fLo = fi; lo = xi;
     }
   }
-  xP = Math.max(xB+1e-4, Math.min(xD-1e-4, xP));
-  return {xP, yP:eqY(xP,alpha)};
+  // bisect
+  for (let i = 0; i < 50; i++) {
+    const mid = (lo+hi)/2, fm = f(mid);
+    if (fm*fLo > 0) { lo=mid; fLo=fm; } else { hi=mid; fHi=fm; }
+    if (hi-lo < 1e-7) break;
+  }
+  const xP = (lo+hi)/2;
+  return {xP, yP:eqY(vle,xP)};
 }
 
-function calcRmin(alpha, xD, xB, q, xF) {
-  const {xP,yP} = pinch(alpha,xD,xB,q,xF);
-  const d = yP-xP;
-  return Math.abs(d)<1e-9 ? 0.001 : Math.max(0.001,(xD-yP)/d);
+function calcRmin(vle, xD, xB, q, xF) {
+  const {xP, yP} = findPinch(vle, xD, xB, q, xF);
+  const R0 = Math.abs(yP-xP)>1e-6 ? (xD-yP)/(yP-xP) : 0.001;
+  // Scan enriching section [xP, xD] for tangent pinch
+  let Rmin = R0;
+  for (const {x,y} of vle.pts) {
+    if (x < xP-0.005 || x > xD-0.001) continue;
+    const d = y-x;
+    if (d < 1e-4) continue;
+    const R = (xD-y)/d;
+    if (R > Rmin) Rmin = R;
+  }
+  return Math.max(0.001, Rmin);
 }
 
-function calcNmin(alpha, xD, xB) {
-  return Math.log((xD/(1-xD))*((1-xB)/xB)) / Math.log(alpha);
+function calcNmin(vle, xD, xB) {
+  // Stage-step at total reflux (operating line = y=x diagonal)
+  let y = xD, n = 0, x = xD;
+  for (let i = 0; i < 80; i++) {
+    const xe = eqX(vle, y);
+    if (isNaN(xe)||xe<=xB) { if(x>xB) n+=(x-xB)/Math.max(1e-6,x-xe); break; }
+    n++; x=xe; y=xe; // at total reflux, y_new = x (OL = diagonal)
+  }
+  return n;
 }
 
-function buildStages(alpha, xD, xB, R, q, xF) {
-  const {xI,yI} = intersect(alpha,xD,xB,R,q,xF);
-  const xIc = Math.max(xB+1e-3, Math.min(xD-1e-3, xI));
+function buildStages(vle, xD, xB, R, q, xF, xMax) {
+  const {xI,yI} = intersect(xD,xB,R,q,xF);
+  const xIc = Math.max(xB+1e-3, Math.min(xMax-1e-3, xI));
   const ss = Math.abs(xIc-xB)>1e-9 ? (yI-xB)/(xIc-xB) : 999;
   const sY = x => ss*(x-xB)+xB;
   const eY = x => R/(R+1)*x+xD/(R+1);
   const stages=[]; let x=xD, y=xD, onE=true, feedTray=null;
   for (let i=0; i<80; i++) {
-    const xe = eqX(y,alpha);
+    const xe = eqX(vle,y);
     if (isNaN(xe)||xe<=xB) {
       if (x>xB) {
         const frac=(x-xB)/Math.max(1e-6,x-(isNaN(xe)?xB:xe));
@@ -433,258 +581,388 @@ function buildStages(alpha, xD, xB, R, q, xF) {
       break;
     }
     if (onE&&xe<xIc) {
-      const ye=eY(xe),ys=sY(xe);
-      if (ys<ye&&ys>=xB-0.01) { onE=false; feedTray=stages.length+1; }
+      if (sY(xe)<eY(xe)&&sY(xe)>=xB-0.01) { onE=false; feedTray=stages.length+1; }
     }
-    const yn = onE ? eY(xe) : sY(xe);
-    stages.push({hx1:x,hy:y,hx2:xe, vx:xe,vy1:y,vy2:yn,
-                 section:onE?'e':'s', isFeed:(!onE&&feedTray===stages.length+1), partial:false});
+    const yn = onE?eY(xe):sY(xe);
+    stages.push({hx1:x,hy:y,hx2:xe,vx:xe,vy1:y,vy2:yn,
+      section:onE?'e':'s',isFeed:(!onE&&feedTray===stages.length+1),partial:false});
     x=xe; y=yn;
     if (y<=xB+5e-4) break;
   }
-  const last = stages[stages.length-1];
-  const nTot = last?.partial ? (stages.length-1)+(last.frac||0) : stages.length;
-  return {stages, nTot, feedTray:feedTray??Math.ceil(stages.filter(s=>!s.partial).length/2), xI:xIc, yI};
+  const last=stages[stages.length-1];
+  const nTot=last?.partial?(stages.length-1)+(last.frac||0):stages.length;
+  return {stages,nTot,feedTray:feedTray??Math.ceil(stages.filter(s=>!s.partial).length/2),xI:xIc,yI};
+}
+
+function cntStages(vle, xD, xB, Rv, q, xF, xMax) {
+  const {xI,yI}=intersect(xD,xB,Rv,q,xF);
+  const xIc=Math.max(xB+1e-3,Math.min(xMax-1e-3,xI));
+  const ss=Math.abs(xIc-xB)>1e-9?(yI-xB)/(xIc-xB):999;
+  const sY=x=>ss*(x-xB)+xB, eY=x=>Rv/(Rv+1)*x+xD/(Rv+1);
+  let x=xD,y=xD,onE=true,n=0;
+  for (let i=0;i<80;i++){
+    const xe=eqX(vle,y);
+    if(isNaN(xe)||xe<=xB){if(x>xB)n+=(x-xB)/Math.max(1e-6,x-xe);break;}
+    if(onE&&xe<xIc){if(sY(xe)<eY(xe)&&sY(xe)>=xB-.01)onE=false;}
+    const yn=onE?eY(xe):sY(xe);n++;x=xe;y=yn;
+    if(y<=xB+5e-4)break;
+  }
+  return Math.min(n,60);
 }
 
 function compute() {
-  const {alpha,xD,xB,R,q,xF} = P;
-  const Rmin = calcRmin(alpha,xD,xB,q,xF);
-  const Nmin = calcNmin(alpha,xD,xB);
+  if (!VLE) return;
+  const {xD,xB,R,q,xF} = P;
+  const xMax = VLE.xMax;
+  const Rmin = calcRmin(VLE,xD,xB,q,xF);
+  const Nmin = calcNmin(VLE,xD,xB);
   const valid = R > Rmin*1.001;
-  const {stages,nTot,feedTray,xI,yI} = buildStages(alpha,xD,xB,R,q,xF);
+  const {stages,nTot,feedTray,xI,yI} = buildStages(VLE,xD,xB,R,q,xF,xMax);
   C = {Rmin,Nmin,valid,stages,nTot,feedTray,xI,yI};
 }
 
-function countStagesOnly(alpha, xD, xB, Rv, q, xF) {
-  const {xI,yI} = intersect(alpha,xD,xB,Rv,q,xF);
-  const xIc = Math.max(xB+1e-3,Math.min(xD-1e-3,xI));
-  const ss = Math.abs(xIc-xB)>1e-9 ? (yI-xB)/(xIc-xB) : 999;
-  const sY=x=>ss*(x-xB)+xB, eY=x=>Rv/(Rv+1)*x+xD/(Rv+1);
-  let x=xD,y=xD,onE=true,n=0;
-  for (let i=0; i<80; i++) {
-    const xe=eqX(y,alpha);
-    if (isNaN(xe)||xe<=xB) { if(x>xB)n+=(x-xB)/Math.max(1e-6,x-(isNaN(xe)?xB:xe)); break; }
-    if (onE&&xe<xIc) { const ye=eY(xe),ys=sY(xe); if(ys<ye&&ys>=xB-.01)onE=false; }
-    const yn=onE?eY(xe):sY(xe);
-    n++; x=xe; y=yn;
-    if (y<=xB+5e-4) break;
-  }
-  return Math.min(n, 60);
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  SVG DIAGRAM   viewBox 0 0 720 640
-//  Plot area ≈ 1.25× the original 600×540 version
-// ═══════════════════════════════════════════════════════════════
-const ML=82, MR=18, MT=18, MB=66;
-const PW=720-ML-MR;  // 620
-const PH=640-MT-MB;  // 556
-const sx = v => ML+v*PW;
-const sy = v => MT+(1-v)*PH;
-const f1 = v => v.toFixed(1);
-const LC = '#f5f2eb';  // cream — for labels in the dark margin
+// ═══════════════════════════════════════════════════════════════════════════
+//  SVG DIAGRAM  (viewBox 0 0 720 640)
+// ═══════════════════════════════════════════════════════════════════════════
+const ML=82,MR=18,MT=18,MB=66;
+const PW=720-ML-MR, PH=640-MT-MB; // 620 × 556
+const sx=v=>ML+v*PW, sy=v=>MT+(1-v)*PH;
+const f1=v=>v.toFixed(1);
+const LC='#f5f2eb'; // cream — labels on dark background
 
 function drawDiagram() {
-  if (!C) return;
-  const {alpha,xD,xB,xF,R,q} = P;
-  const {valid,stages,xI,yI} = C;
-  let h = '';
+  if (!C||!VLE) return;
+  const {xD,xB,xF,R,q}=P, {valid,stages,xI,yI}=C;
+  const sys=SYSTEMS[sysIdx];
+  let h='';
 
   // cream plot background
-  h += `<rect x="${ML}" y="${MT}" width="${PW}" height="${PH}" fill="#f5f2eb" rx="1"/>`;
-
+  h+=`<rect x="${ML}" y="${MT}" width="${PW}" height="${PH}" fill="#f5f2eb" rx="1"/>`;
   // grid
-  for (let v=0.1; v<1; v+=0.1) {
-    const vr = Math.round(v*10)/10;
-    h += `<line x1="${f1(sx(vr))}" y1="${MT}" x2="${f1(sx(vr))}" y2="${MT+PH}" stroke="#d4d0c8" stroke-width="0.7"/>`;
-    h += `<line x1="${ML}" y1="${f1(sy(vr))}" x2="${ML+PW}" y2="${f1(sy(vr))}" stroke="#d4d0c8" stroke-width="0.7"/>`;
+  for(let v=0.1;v<1;v+=0.1){
+    const vr=Math.round(v*10)/10;
+    h+=`<line x1="${f1(sx(vr))}" y1="${MT}" x2="${f1(sx(vr))}" y2="${MT+PH}" stroke="#d4d0c8" stroke-width="0.6"/>`;
+    h+=`<line x1="${ML}" y1="${f1(sy(vr))}" x2="${ML+PW}" y2="${f1(sy(vr))}" stroke="#d4d0c8" stroke-width="0.6"/>`;
   }
-
-  // axis lines (on cream)
-  h += `<line x1="${ML}" y1="${MT}" x2="${ML}" y2="${MT+PH+1}" stroke="#1f3a5f" stroke-width="2"/>`;
-  h += `<line x1="${ML-1}" y1="${MT+PH}" x2="${ML+PW}" y2="${MT+PH}" stroke="#1f3a5f" stroke-width="2"/>`;
-
-  // tick marks + labels (1.5× original: 14px from 9.5px)
-  for (let v=0; v<=1.001; v+=0.1) {
-    const vr = Math.round(v*10)/10, lbl = vr.toFixed(1);
-    h += `<line x1="${f1(sx(vr))}" y1="${MT+PH}" x2="${f1(sx(vr))}" y2="${MT+PH+6}" stroke="${LC}" stroke-width="1.5"/>`;
-    h += `<text x="${f1(sx(vr))}" y="${MT+PH+21}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" fill="${LC}">${lbl}</text>`;
-    h += `<line x1="${ML-6}" y1="${f1(sy(vr))}" x2="${ML}" y2="${f1(sy(vr))}" stroke="${LC}" stroke-width="1.5"/>`;
-    h += `<text x="${ML-10}" y="${f1(sy(vr)+5)}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="14" fill="${LC}">${lbl}</text>`;
+  // axis lines
+  h+=`<line x1="${ML}" y1="${MT}" x2="${ML}" y2="${MT+PH+1}" stroke="#1f3a5f" stroke-width="2"/>`;
+  h+=`<line x1="${ML-1}" y1="${MT+PH}" x2="${ML+PW}" y2="${MT+PH}" stroke="#1f3a5f" stroke-width="2"/>`;
+  // ticks + labels (cream, on dark margins)
+  for(let v=0;v<=1.001;v+=0.1){
+    const vr=Math.round(v*10)/10, lbl=vr.toFixed(1);
+    h+=`<line x1="${f1(sx(vr))}" y1="${MT+PH}" x2="${f1(sx(vr))}" y2="${MT+PH+6}" stroke="${LC}" stroke-width="1.5"/>`;
+    h+=`<text x="${f1(sx(vr))}" y="${MT+PH+21}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" fill="${LC}">${lbl}</text>`;
+    h+=`<line x1="${ML-6}" y1="${f1(sy(vr))}" x2="${ML}" y2="${f1(sy(vr))}" stroke="${LC}" stroke-width="1.5"/>`;
+    h+=`<text x="${ML-10}" y="${f1(sy(vr)+5)}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="14" fill="${LC}">${lbl}</text>`;
   }
-
-  // axis titles (1.5× original: 16px from 11px) — cream on dark margin
-  h += `<text x="${f1(ML+PW/2)}" y="${MT+PH+50}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="16" fill="${LC}" font-weight="500">mole fraction in liquid, x</text>`;
-  h += `<text x="${ML-62}" y="${f1(MT+PH/2)}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="16" fill="${LC}" font-weight="500" transform="rotate(-90 ${ML-62} ${f1(MT+PH/2)})">mole fraction in vapour, y</text>`;
+  // axis titles
+  h+=`<text x="${f1(ML+PW/2)}" y="${MT+PH+50}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="${LC}" font-weight="500">mole fraction in liquid, x</text>`;
+  h+=`<text x="${ML-60}" y="${f1(MT+PH/2)}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="${LC}" font-weight="500" transform="rotate(-90 ${ML-60} ${f1(MT+PH/2)})">mole fraction in vapour, y</text>`;
 
   // 45° diagonal
-  h += `<line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(1)}" y2="${sy(1)}" stroke="#8aacbf" stroke-width="1.5" stroke-dasharray="8,5"/>`;
+  h+=`<line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(1)}" y2="${sy(1)}" stroke="#8aacbf" stroke-width="1.5" stroke-dasharray="8,5"/>`;
 
-  // equilibrium curve
-  const ep = [];
-  for (let i=0; i<=100; i++) { const x=i/100; ep.push(`${f1(sx(x))},${f1(sy(eqY(x,alpha)))}`); }
-  h += `<polyline points="${ep.join(' ')}" fill="none" stroke="#1f3a5f" stroke-width="2.8"/>`;
+  // equilibrium curve (from VLE)
+  const ep=[];
+  for(const {x,y} of VLE.pts) ep.push(`${f1(sx(x))},${f1(sy(y))}`);
+  h+=`<polyline points="${ep.join(' ')}" fill="none" stroke="#1f3a5f" stroke-width="2.8"/>`;
+
+  // azeotrope marker for ethanol-water
+  if (sys.xAz) {
+    const xaz=sys.xAz;
+    h+=`<line x1="${f1(sx(xaz))}" y1="${MT}" x2="${f1(sx(xaz))}" y2="${MT+PH}" stroke="#c84b2f" stroke-width="1" stroke-dasharray="5,4" opacity="0.6"/>`;
+    h+=`<text x="${f1(sx(xaz)-4)}" y="${MT+14}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="11" fill="#c84b2f">azeotrope (${xaz})</text>`;
+  }
 
   if (valid) {
     // enriching OL
-    h += `<line x1="${f1(sx(0))}" y1="${f1(sy(xD/(R+1)))}" x2="${f1(sx(xD))}" y2="${f1(sy(xD))}" stroke="#c84b2f" stroke-width="2.2"/>`;
+    h+=`<line x1="${f1(sx(0))}" y1="${f1(sy(xD/(R+1)))}" x2="${f1(sx(xD))}" y2="${f1(sy(xD))}" stroke="#c84b2f" stroke-width="2.2"/>`;
     // stripping OL
-    h += `<line x1="${f1(sx(xB))}" y1="${f1(sy(xB))}" x2="${f1(sx(xI))}" y2="${f1(sy(yI))}" stroke="#2a7a50" stroke-width="2.2"/>`;
+    h+=`<line x1="${f1(sx(xB))}" y1="${f1(sy(xB))}" x2="${f1(sx(xI))}" y2="${f1(sy(yI))}" stroke="#2a7a50" stroke-width="2.2"/>`;
     // q-line
-    const ql = qLineEndpoints(q, xF);
-    if (ql.vert) {
-      h += `<line x1="${f1(sx(ql.x1))}" y1="${f1(sy(0))}" x2="${f1(sx(ql.x2))}" y2="${f1(sy(1))}" stroke="#6b42a8" stroke-width="1.8" stroke-dasharray="10,5"/>`;
+    const ql=qLine(q,xF);
+    if(ql.vert){
+      h+=`<line x1="${f1(sx(xF))}" y1="${f1(sy(0))}" x2="${f1(sx(xF))}" y2="${f1(sy(1))}" stroke="#6b42a8" stroke-width="1.8" stroke-dasharray="10,5"/>`;
     } else {
-      h += `<line x1="${f1(sx(ql.x1))}" y1="${f1(sy(ql.y1))}" x2="${f1(sx(ql.x2))}" y2="${f1(sy(ql.y2))}" stroke="#6b42a8" stroke-width="1.8" stroke-dasharray="10,5"/>`;
+      h+=`<line x1="${f1(sx(ql.x1))}" y1="${f1(sy(ql.y1))}" x2="${f1(sx(ql.x2))}" y2="${f1(sy(ql.y2))}" stroke="#6b42a8" stroke-width="1.8" stroke-dasharray="10,5"/>`;
     }
     // intersection dot
-    h += `<circle cx="${f1(sx(xI))}" cy="${f1(sy(yI))}" r="5" fill="#6b42a8" stroke="#f5f2eb" stroke-width="2"/>`;
+    h+=`<circle cx="${f1(sx(xI))}" cy="${f1(sy(yI))}" r="5" fill="#6b42a8" stroke="#f5f2eb" stroke-width="2"/>`;
   }
 
-  // composition markers (on cream background — coloured)
-  const mark = (xv, col, lbl, above) => {
-    const cx=f1(sx(xv)), cy=f1(sy(xv));
-    h += `<line x1="${cx}" y1="${MT+PH}" x2="${cx}" y2="${cy}" stroke="${col}" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.5"/>`;
-    h += `<circle cx="${cx}" cy="${cy}" r="5" fill="white" stroke="${col}" stroke-width="2.2"/>`;
-    const ty = above ? +cy-10 : +cy+20;
-    h += `<text x="${cx}" y="${ty}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="${col}" font-weight="600">${lbl}</text>`;
+  // composition markers
+  const mark=(xv,col,lbl,above)=>{
+    const cx=f1(sx(xv)),cy=f1(sy(xv));
+    h+=`<line x1="${cx}" y1="${MT+PH}" x2="${cx}" y2="${cy}" stroke="${col}" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.5"/>`;
+    h+=`<circle cx="${cx}" cy="${cy}" r="5" fill="white" stroke="${col}" stroke-width="2.2"/>`;
+    h+=`<text x="${cx}" y="${above?+cy-10:+cy+20}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="${col}" font-weight="600">${lbl}</text>`;
   };
-  mark(xD, '#c84b2f', `x_D=${xD.toFixed(2)}`, true);
-  mark(xF, '#6b42a8', `x_F=${xF.toFixed(2)}`, true);
-  mark(xB, '#2a7a50', `x_B=${xB.toFixed(3)}`, false);
+  mark(xD,'#c84b2f',`x_D=${xD.toFixed(2)}`,true);
+  mark(xF,'#6b42a8',`x_F=${xF.toFixed(2)}`,true);
+  mark(xB,'#2a7a50',`x_B=${xB.toFixed(3)}`,false);
 
-  // stage staircase
-  const nDraw = Math.min(nShown, stages.length);
-  for (let i=0; i<nDraw; i++) {
-    const s = stages[i];
-    const isLatest = i===nDraw-1;
-    const col = s.isFeed ? '#c8962f' : (isLatest ? '#f0c050' : '#e8a840');
-    const op  = s.partial ? '0.55' : (isLatest ? '1' : '0.85');
-    const sw  = isLatest ? '3' : '2.2';
-    if (!s.partial) {
-      h += `<line x1="${f1(sx(s.hx1))}" y1="${f1(sy(s.hy))}" x2="${f1(sx(s.hx2))}" y2="${f1(sy(s.hy))}" stroke="${col}" stroke-width="${sw}" opacity="${op}"/>`;
-      h += `<line x1="${f1(sx(s.vx))}" y1="${f1(sy(s.vy1))}" x2="${f1(sx(s.vx))}" y2="${f1(sy(s.vy2))}" stroke="${col}" stroke-width="${sw}" opacity="${op}"/>`;
-      const lx=f1((sx(s.hx1)+sx(s.hx2))/2), ly=f1(sy(s.hy)-9);
-      h += `<text x="${lx}" y="${ly}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" font-weight="600" fill="${s.isFeed?'#c8962f':'#7a5c18'}">${i+1}${s.isFeed?'★':''}</text>`;
+  // stages
+  const nDraw=Math.min(nShown,stages.length);
+  for(let i=0;i<nDraw;i++){
+    const s=stages[i];
+    const isLast=i===nDraw-1;
+    const col=s.isFeed?'#c8962f':(isLast?'#f0c050':'#e8a840');
+    const op=s.partial?'0.55':(isLast?'1':'0.85');
+    const sw=isLast?'3':'2.2';
+    if(!s.partial){
+      h+=`<line x1="${f1(sx(s.hx1))}" y1="${f1(sy(s.hy))}" x2="${f1(sx(s.hx2))}" y2="${f1(sy(s.hy))}" stroke="${col}" stroke-width="${sw}" opacity="${op}"/>`;
+      h+=`<line x1="${f1(sx(s.vx))}" y1="${f1(sy(s.vy1))}" x2="${f1(sx(s.vx))}" y2="${f1(sy(s.vy2))}" stroke="${col}" stroke-width="${sw}" opacity="${op}"/>`;
+      const lx=f1((sx(s.hx1)+sx(s.hx2))/2),ly=f1(sy(s.hy)-9);
+      h+=`<text x="${lx}" y="${ly}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" font-weight="600" fill="${s.isFeed?'#c8962f':'#7a5c18'}">${i+1}${s.isFeed?'★':''}</text>`;
     } else {
-      h += `<line x1="${f1(sx(s.hx1))}" y1="${f1(sy(s.hy))}" x2="${f1(sx(s.hx2))}" y2="${f1(sy(s.hy))}" stroke="${col}" stroke-width="2.2" stroke-dasharray="5,3" opacity="${op}"/>`;
+      h+=`<line x1="${f1(sx(s.hx1))}" y1="${f1(sy(s.hy))}" x2="${f1(sx(s.hx2))}" y2="${f1(sy(s.hy))}" stroke="${col}" stroke-width="2.2" stroke-dasharray="5,3" opacity="${op}"/>`;
     }
   }
-
-  document.getElementById('diagram').innerHTML = h;
+  document.getElementById('diagram').innerHTML=h;
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  SENSITIVITY CHART   viewBox 0 0 900 110
-// ═══════════════════════════════════════════════════════════════
-function drawSens() {
-  if (!C) return;
-  const {alpha,xD,xB,q,xF} = P, Rmin = C.Rmin;
-  const W=900, H=110, ml=50, mr=16, mt=8, mb=36;
-  const pw=W-ml-mr, ph=H-mt-mb;
-  const maxRR=5, steps=50;
+function qLine(q,xF) {
+  if(Math.abs(q-1)<4e-3) return {x1:xF,y1:0,x2:xF,y2:1,vert:true};
+  if(Math.abs(q)<4e-3)   return {x1:0,y1:xF,x2:1,y2:xF};
+  const m=q/(q-1),b=-xF/(q-1);
+  const cand=[];
+  const push=(x,y)=>{if(x>=-1e-9&&x<=1+1e-9&&y>=-1e-9&&y<=1+1e-9)cand.push([Math.min(1,Math.max(0,x)),Math.min(1,Math.max(0,y))])};
+  push(0,b);push(1,m+b);
+  if(Math.abs(m)>1e-9){push(-b/m,0);push((1-b)/m,1);}
+  cand.sort((a,c)=>a[0]-c[0]);
+  const u=cand.filter((p,i)=>i===0||Math.hypot(p[0]-cand[i-1][0],p[1]-cand[i-1][1])>1e-4);
+  return u.length<2?{x1:Math.max(0,xF-.3),y1:m*Math.max(0,xF-.3)+b,x2:Math.min(1,xF+.3),y2:m*Math.min(1,xF+.3)+b}
+                   :{x1:u[0][0],y1:u[0][1],x2:u[u.length-1][0],y2:u[u.length-1][1]};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  SENSITIVITY CHART
+// ═══════════════════════════════════════════════════════════════════════════
+function drawSens(){
+  if(!C||!VLE) return;
+  const {xD,xB,q,xF}=P, Rmin=C.Rmin, xMax=VLE.xMax;
+  const W=900,H=90,ml=48,mr=16,mt=8,mb=32;
+  const pw=W-ml-mr,ph=H-mt-mb;
+  const maxRR=5,steps=40;
   const pts=[];
-  for (let i=1; i<=steps; i++) {
-    const rr = 1.02+(maxRR-1.02)*(i-1)/(steps-1);
-    pts.push([rr, Math.min(countStagesOnly(alpha,xD,xB,rr*Rmin,q,xF), 40)]);
+  for(let i=1;i<=steps;i++){
+    const rr=1.03+(maxRR-1.03)*(i-1)/(steps-1);
+    pts.push([rr,Math.min(cntStages(VLE,xD,xB,rr*Rmin,q,xF,xMax),40)]);
   }
-  const maxN = Math.max(15, ...pts.filter(p=>p[0]<=4.5).map(p=>p[1]));
-  const cx = r => ml+(r-1)/(maxRR-1)*pw;
-  const cy = n => mt+ph-Math.min(1,n/maxN)*ph;
-
-  let h = `<rect x="${ml}" y="${mt}" width="${pw}" height="${ph}" fill="#0a1622" rx="1"/>`;
-  for (let r=1; r<=maxRR; r++) {
-    h += `<line x1="${cx(r)}" y1="${mt}" x2="${cx(r)}" y2="${mt+ph}" stroke="#1f3a5f" stroke-width="0.8"/>`;
-    h += `<text x="${cx(r)}" y="${mt+ph+16}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" fill="#f5f2eb">${r}×</text>`;
+  const maxN=Math.max(12,...pts.filter(p=>p[0]<=4.5).map(p=>p[1]));
+  const cx=r=>ml+(r-1)/(maxRR-1)*pw, cy=n=>mt+ph-Math.min(1,n/maxN)*ph;
+  let h=`<rect x="${ml}" y="${mt}" width="${pw}" height="${ph}" fill="#0a1622" rx="1"/>`;
+  for(let r=1;r<=maxRR;r++){
+    h+=`<line x1="${cx(r)}" y1="${mt}" x2="${cx(r)}" y2="${mt+ph}" stroke="#1f3a5f" stroke-width="0.8"/>`;
+    h+=`<text x="${cx(r)}" y="${mt+ph+16}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" fill="#f5f2eb">${r}×</text>`;
   }
-  for (let n=0; n<=maxN; n+=5) {
-    h += `<line x1="${ml}" y1="${cy(n)}" x2="${ml+pw}" y2="${cy(n)}" stroke="#1f3a5f" stroke-width="0.5"/>`;
-    h += `<text x="${ml-5}" y="${cy(n)+4}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="13" fill="#f5f2eb">${n}</text>`;
+  for(let n=0;n<=maxN;n+=5){
+    h+=`<line x1="${ml}" y1="${cy(n)}" x2="${ml+pw}" y2="${cy(n)}" stroke="#1f3a5f" stroke-width="0.5"/>`;
+    h+=`<text x="${ml-5}" y="${cy(n)+4}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="12" fill="#f5f2eb">${n}</text>`;
   }
-  h += `<polyline points="${pts.map(([r,n])=>`${cx(r).toFixed(1)},${cy(n).toFixed(1)}`).join(' ')}" fill="none" stroke="#c84b2f" stroke-width="2"/>`;
-  h += `<text x="${ml+pw/2}" y="${H-3}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" fill="#f5f2eb">R / R_min</text>`;
-  h += `<text x="${ml-36}" y="${mt+ph/2}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" fill="#f5f2eb" transform="rotate(-90 ${ml-36} ${mt+ph/2})">N stages</text>`;
-  h += `<line x1="${cx(1)}" y1="${mt}" x2="${cx(1)}" y2="${mt+ph}" stroke="#6b42a8" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.7"/>`;
-  h += `<text x="${cx(1)+5}" y="${mt+ph-4}" font-family="IBM Plex Mono,monospace" font-size="12" fill="#9b72d8">R_min (pinch)</text>`;
-  const curRR = P.R/Rmin;
-  if (curRR>=1.02&&curRR<=maxRR) {
-    const curN = countStagesOnly(alpha,xD,xB,P.R,q,xF);
-    const px=cx(curRR), py=cy(Math.min(curN,maxN));
-    h += `<line x1="${px}" y1="${mt}" x2="${px}" y2="${mt+ph}" stroke="#e8a840" stroke-width="1.2" stroke-dasharray="5,3"/>`;
-    h += `<circle cx="${px}" cy="${py}" r="5.5" fill="#e8a840" stroke="#0a1622" stroke-width="2"/>`;
-    const lblX = curRR>4?px-6:px+8;
-    h += `<text x="${lblX}" y="${py-7}" font-family="IBM Plex Mono,monospace" font-size="13" fill="#e8a840" text-anchor="${curRR>4?'end':'start'}">N=${curN.toFixed(1)}, R/Rm=${curRR.toFixed(2)}</text>`;
+  h+=`<polyline points="${pts.map(([r,n])=>`${cx(r).toFixed(1)},${cy(n).toFixed(1)}`).join(' ')}" fill="none" stroke="#c84b2f" stroke-width="2"/>`;
+  h+=`<text x="${ml+pw/2}" y="${H-2}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="13" fill="#f5f2eb">R / R_min</text>`;
+  h+=`<text x="${ml-34}" y="${mt+ph/2}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="13" fill="#f5f2eb" transform="rotate(-90 ${ml-34} ${mt+ph/2})">N</text>`;
+  h+=`<line x1="${cx(1)}" y1="${mt}" x2="${cx(1)}" y2="${mt+ph}" stroke="#6b42a8" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>`;
+  const curRR=P.R/Rmin;
+  if(curRR>=1.03&&curRR<=maxRR){
+    const curN=cntStages(VLE,xD,xB,P.R,q,xF,xMax);
+    const px=cx(curRR),py=cy(Math.min(curN,maxN));
+    h+=`<line x1="${px}" y1="${mt}" x2="${px}" y2="${mt+ph}" stroke="#e8a840" stroke-width="1.2" stroke-dasharray="5,3"/>`;
+    h+=`<circle cx="${px}" cy="${py}" r="5" fill="#e8a840" stroke="#0a1622" stroke-width="2"/>`;
+    const lblX=curRR>4?px-6:px+8;
+    h+=`<text x="${lblX}" y="${py-6}" font-family="IBM Plex Mono,monospace" font-size="12" fill="#e8a840" text-anchor="${curRR>4?'end':'start'}">N=${curN.toFixed(1)}, R/Rm=${curRR.toFixed(2)}</text>`;
   }
-  document.getElementById('sensChart').innerHTML = h;
+  document.getElementById('sensChart').innerHTML=h;
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  UI
-// ═══════════════════════════════════════════════════════════════
-function updateDisplay() {
-  if (!C) return;
-  const shown=nShown>0, all=nShown>=C.stages.length;
-  document.getElementById('r-shown').textContent = shown ? nShown : '—';
-  document.getElementById('r-n').textContent     = all   ? C.nTot.toFixed(1) : '—';
-  document.getElementById('r-feed').textContent  = (shown&&nShown>=C.feedTray) ? C.feedTray : '—';
-  document.getElementById('r-rmin').textContent  = C.Rmin.toFixed(3);
-  document.getElementById('r-rrmin').textContent = (P.R/C.Rmin).toFixed(2);
-  document.getElementById('r-nmin').textContent  = C.Nmin.toFixed(1);
-  document.getElementById('warn').classList.toggle('on', !C.valid);
+// ═══════════════════════════════════════════════════════════════════════════
+//  ALPHA TABLE
+// ═══════════════════════════════════════════════════════════════════════════
+function drawAlpha(){
+  if(!VLE) return;
+  const sys=SYSTEMS[sysIdx];
+  const xMax=VLE.xMax;
+  const useFahrenheit=document.getElementById('unitTog').checked;
+  const fmtT=T=>useFahrenheit?(T*9/5+32).toFixed(1)+'°F':T.toFixed(1)+'°C';
+  // Sample points
+  const xs=[];
+  const step=xMax>0.89?0.1:xMax/10;
+  for(let x=step;x<xMax-0.01;x+=step) xs.push(Math.round(x*1000)/1000);
+  // Add azeotrope row if applicable
+  if(sys.xAz) xs.push(sys.xAz);
+
+  let tbody='';
+  for(const x of xs){
+    const y=eqY(VLE,x), T=getT(VLE,x);
+    const alpha=x>0.002&&x<xMax-0.002&&Math.abs(y-x)>0.002?(y/(1-y))/(x/(1-x)):null;
+    const isAz=sys.xAz&&Math.abs(x-sys.xAz)<0.001;
+    const tdA=isAz?'td-az':'td-a';
+    const aStr=alpha?alpha.toFixed(2):(isAz?'1.00 ★':'—');
+    tbody+=`<tr>
+      <td>${isAz?x.toFixed(3):x.toFixed(2)}</td>
+      <td>${fmtT(T)}</td>
+      <td>${y.toFixed(3)}</td>
+      <td class="${tdA}">${aStr}</td>
+    </tr>`;
+  }
+  const Tcol=useFahrenheit?'T (°F)':'T (°C)';
+  document.getElementById('aTbl').innerHTML=
+    `<thead><tr><th>x</th><th>${Tcol}</th><th>y</th><th>α</th></tr></thead><tbody>${tbody}</tbody>`;
+  document.getElementById('aTtl').textContent=`α variation — ${sys.name}`;
+  document.getElementById('aSrc').textContent=`Source: ${sys.src}`;
 }
 
-function fullRedraw() {
+// ═══════════════════════════════════════════════════════════════════════════
+//  Q DESCRIPTION
+// ═══════════════════════════════════════════════════════════════════════════
+function qDesc(q){
+  if(q>1.005){
+    const e=(q-1).toFixed(2),sl=(q/(q-1)).toFixed(1);
+    return `<strong>Subcooled liquid</strong> — feed is below its bubble point. Each mole of feed condenses ${e}&nbsp;mol of rising vapour on the feed tray. q-line slope = ${sl} (steep positive).`;
+  }
+  if(Math.abs(q-1)<0.025) return `<strong>Saturated liquid</strong> — feed enters exactly at its bubble point. No phase change on the feed tray. q-line is <em>vertical</em> at x = x<sub>F</sub>.`;
+  if(q>0.005){
+    const liq=(q*100).toFixed(0),vap=((1-q)*100).toFixed(0),sl=(q/(q-1)).toFixed(2);
+    return `<strong>Partially vaporised</strong> — feed is a two-phase mixture (${liq}% liquid, ${vap}% vapour). q-line slope = ${sl} (negative).`;
+  }
+  if(Math.abs(q)<0.025) return `<strong>Saturated vapour</strong> — feed enters at its dew point. q-line is <em>horizontal</em> at y = x<sub>F</sub>.`;
+  const sl=(q/(q-1)).toFixed(2);
+  return `<strong>Superheated vapour</strong> — feed is above dew point; provides sensible heat to the column. q-line slope = ${sl} (shallow positive, 0 to 1).`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  UI STATE
+// ═══════════════════════════════════════════════════════════════════════════
+function updateDisplay(){
+  if(!C) return;
+  const shown=nShown>0,all=nShown>=C.stages.length;
+  document.getElementById('r-shown').textContent=shown?nShown:'—';
+  document.getElementById('r-n').textContent=all?C.nTot.toFixed(1):'—';
+  document.getElementById('r-feed').textContent=(shown&&nShown>=C.feedTray)?C.feedTray:'—';
+  document.getElementById('r-rmin').textContent=C.Rmin.toFixed(3);
+  document.getElementById('r-rrmin').textContent=(P.R/C.Rmin).toFixed(2);
+  document.getElementById('r-nmin').textContent=C.Nmin.toFixed(1);
+  const sys=SYSTEMS[sysIdx];
+  const warned=[];
+  if(!C.valid) warned.push(`R &lt; R<sub>min</sub> (${C.Rmin.toFixed(2)}) — column cannot achieve separation`);
+  if(sys.xAz&&P.xD>=sys.xAz-0.005) warned.push(`x<sub>D</sub> ≥ azeotrope (${sys.xAz}) — ordinary distillation cannot achieve this`);
+  const w=document.getElementById('warn');
+  w.innerHTML=warned.join('<br>');
+  w.classList.toggle('on',warned.length>0);
+}
+
+function regenVLE(){
+  const sys=SYSTEMS[sysIdx];
+  if(sys.id==='cu'){
+    // Read Antoine constants
+    try {
+      sys.antA={
+        A:+document.getElementById('ant-Aa').value,
+        B:+document.getElementById('ant-Ba').value,
+        C:+document.getElementById('ant-Ca').value
+      };
+      sys.antB={
+        A:+document.getElementById('ant-Ab').value,
+        B:+document.getElementById('ant-Bb').value,
+        C:+document.getElementById('ant-Cb').value
+      };
+    } catch(e){}
+  }
+  VLE=genVLE(sys,P.pressure||101);
+  const errEl=document.getElementById('antErr');
+  if(!VLE){
+    errEl.textContent='Invalid Antoine constants — check that component A is more volatile than B';
+    errEl.classList.add('show');
+    VLE=null;
+  } else {
+    errEl.classList.remove('show');
+  }
+}
+
+function fullRedraw(){
   compute(); nShown=0;
-  drawDiagram(); drawSens(); updateDisplay();
+  drawDiagram(); drawSens(); drawAlpha(); updateDisplay();
 }
 
-function setP(key, val) {
-  P[key] = val;
-  if (key==='xD') P.xD = Math.max(P.xF+0.05, val);
-  if (key==='xB') P.xB = Math.min(P.xF-0.05, val);
-  if (key==='xF') {
-    P.xF = Math.max(P.xB+0.05, Math.min(P.xD-0.05, val));
-    document.getElementById('sl-xF').value = P.xF;
+function setP(key,val){
+  P[key]=val;
+  if(key==='xD') P.xD=Math.max(P.xF+0.05,val);
+  if(key==='xB') P.xB=Math.min(P.xF-0.05,val);
+  if(key==='xF'){
+    P.xF=Math.max(P.xB+0.05,Math.min(P.xD-0.05,val));
+    document.getElementById('sl-xF').value=P.xF;
   }
-  document.getElementById('v-'+key).textContent = val.toFixed(2);
+  // Update display label
+  if(key==='pressure'){
+    const useSI=!document.getElementById('unitTog').checked;
+    document.getElementById('v-P').textContent=useSI?`${val} kPa`:`${(val*7.50062).toFixed(0)} mmHg`;
+  } else {
+    document.getElementById('v-'+key).textContent=val.toFixed(2);
+  }
+  // Regen VLE only if pressure changed (and not fixed system)
+  if(key==='pressure') { regenVLE(); }
   fullRedraw();
 }
 
-function setQ(val) {
-  P.q = val;
-  document.getElementById('v-q').textContent = val.toFixed(2);
-  document.getElementById('q-desc').innerHTML = qDesc(val);
+function setQ(val){
+  P.q=val;
+  document.getElementById('v-q').textContent=val.toFixed(2);
+  document.getElementById('q-desc').innerHTML=qDesc(val);
   fullRedraw();
 }
 
-function loadPreset(i) {
-  P = {...PRESETS[i]};
-  ['alpha','xF','xD','xB','R'].forEach(k => {
-    document.getElementById('sl-'+k).value = P[k];
-    document.getElementById('v-'+k).textContent = P[k].toFixed(2);
+function loadSys(i){
+  sysIdx=i;
+  const sys=SYSTEMS[i];
+  P={...sys.def};
+  // Adjust xD slider max for azeotropic systems
+  const xDSlider=document.getElementById('sl-xD');
+  xDSlider.max=sys.xAz?(sys.xAz-0.01).toFixed(3):'0.999';
+  if(P.xD>+(xDSlider.max)) P.xD=sys.def.xD;
+  // Update slider values
+  ['xF','xD','xB','R'].forEach(k=>{
+    document.getElementById('sl-'+k).value=P[k];
+    document.getElementById('v-'+k).textContent=P[k].toFixed(2);
   });
-  document.getElementById('sl-q').value = P.q;
-  document.getElementById('v-q').textContent = P.q.toFixed(2);
-  document.getElementById('q-desc').innerHTML = qDesc(P.q);
-  document.querySelectorAll('.pre-btn').forEach((b,j) => b.classList.toggle('active', j===i));
-  fullRedraw();
+  document.getElementById('sl-q').value=P.q;
+  document.getElementById('v-q').textContent=P.q.toFixed(2);
+  document.getElementById('q-desc').innerHTML=qDesc(P.q);
+  document.getElementById('sl-P').value=P.pressure||101;
+  document.getElementById('v-P').textContent=`${P.pressure||101} kPa`;
+  // Show/hide Antoine fields
+  document.getElementById('antWrap').classList.toggle('show',sys.id==='cu');
+  // Lock/unlock pressure slider
+  document.getElementById('sl-P-row').classList.toggle('sl-locked',sys.P_fixed);
+  // Preset buttons
+  document.querySelectorAll('.pre-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  regenVLE(); fullRedraw();
 }
 
-function stepOne()    { if(!C||!C.valid)return; if(nShown<C.stages.length){nShown++;drawDiagram();updateDisplay();} }
-function showAll()    { if(!C||!C.valid)return; nShown=C.stages.length;drawDiagram();updateDisplay(); }
-function resetStages(){ nShown=0;drawDiagram();updateDisplay(); }
+function onAntChange(){
+  regenVLE(); fullRedraw();
+}
 
-document.addEventListener('keydown', e => {
-  if (e.target.tagName==='INPUT') return;
-  if (e.code==='Space')  { e.preventDefault(); stepOne(); }
-  if (e.key==='a'||e.key==='A') showAll();
-  if (e.key==='Escape') resetStages();
+function redrawDisplay(){
+  drawAlpha(); // unit toggle only needs to redraw table and pressure label
+  const useSI=!document.getElementById('unitTog').checked;
+  document.getElementById('v-P').textContent=useSI?`${P.pressure||101} kPa`:`${((P.pressure||101)*7.50062).toFixed(0)} mmHg`;
+}
+
+function stepOne()    {if(!C||!C.valid)return;if(nShown<C.stages.length){nShown++;drawDiagram();updateDisplay();}}
+function showAll()    {if(!C||!C.valid)return;nShown=C.stages.length;drawDiagram();updateDisplay();}
+function resetStages(){nShown=0;drawDiagram();updateDisplay();}
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.code==='Space'){e.preventDefault();stepOne();}
+  if(e.key==='a'||e.key==='A')showAll();
+  if(e.key==='Escape')resetStages();
 });
 
-// ── init ──────────────────────────────────────────────────────
-document.getElementById('q-desc').innerHTML = qDesc(P.q);
-fullRedraw();
+// ── Init ──────────────────────────────────────────────────────────────────
+document.getElementById('q-desc').innerHTML=qDesc(P.q);
+loadSys(0);
 </script>
 </body>
 </html>

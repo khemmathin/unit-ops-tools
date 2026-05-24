@@ -4,51 +4,52 @@
 **Department of Chemical Engineering · Kasetsart University**  
 **Dr. Khemmathin Lueangwattanapong**
 
+**Live tool → [khemmathin.github.io/mccabe-thiele](https://khemmathin.github.io/mccabe-thiele)**
+
 ---
 
 ## What this is
 
-A standalone interactive tool for teaching and exploring the **McCabe–Thiele graphical construction** for binary distillation. Runs entirely in the browser — no installation, no server, no login required.
-
-**Live tool → [khemmathin.github.io/mccabe-thiele](https://khemmathin.github.io/mccabe-thiele)**
+A standalone interactive McCabe–Thiele construction tool for binary distillation. Runs entirely in the browser — no installation, no server, no login required.
 
 ---
 
 ## Features
 
-- **Equilibrium curve** computed from constant relative volatility α
-- **Enriching and stripping operating lines** derived from material balances
-- **q-line** with continuous feed-condition slider (−0.5 to +1.5) and live description of the physical meaning at each q value
-- **Step-by-step tray construction** — click once per tray, or reveal all at once
-- **Feed tray** identified automatically and marked with ★
-- **Sensitivity chart** — N theoretical vs R/R_min, current design point highlighted
-- **Keyboard shortcuts** — `Space` to step, `A` for all, `Esc` to reset
+**Real VLE data — no constant-α approximation**
 
-## Verified presets
-
-| System | α | Notes |
+| System | VLE Source | Notes |
 |---|---|---|
-| Benzene–Toluene | 2.47 | Matches Geankoplis Table 26.1-1 geometric mean. Parameters from Example 26.4-1. |
-| Methanol–Water | ≈ 3.46 | Rough mid-range estimate. System is non-ideal; α varies 2.5 → 6.4. |
-| n-Heptane / n-Octane | 2.16 | From Antoine equations at ~110 °C. Near-ideal; constant-α is a good approximation. |
+| Benzene–Toluene | Geankoplis Table 26.1-1 · Raoult sweep | Matches textbook exactly · α = 2.37–2.54 |
+| Methanol–Water | NIST / Gmehling DECHEMA (tabulated x,y) | Non-ideal · α = 2.5–7.6 · pressure fixed |
+| Ethanol–Water | Chu et al. (1950) / NIST (tabulated x,y) | Lab system · azeotrope at x = 0.894 · pressure fixed |
+| n-Heptane/n-Octane | Antoine + Raoult (NIST constants) | Near-ideal · pressure adjustable |
+| Custom System | User-supplied Antoine A, B, C | Any ideal binary pair |
 
-## Important note on accuracy
+**Diagram**
+- Equilibrium curve from real VLE data
+- Enriching and stripping operating lines
+- q-line with continuous slider (−0.5 to +1.5) and live description
+- Step-by-step tray construction — feed tray marked with ★
+- Azeotrope marker and warning for ethanol–water
 
-The tool uses **constant relative volatility α** throughout — the standard undergraduate approximation. For systems where α varies significantly (methanol–water), the stage count will differ from a construction using actual VLE data. This is intentional and makes a useful teaching point.
+**Analysis panels**
+- Sensitivity chart: N theoretical vs R/R_min
+- α variation table: x, T, y, α at 10 compositions — shows how α changes along the column
+- R_min computed numerically (handles both q-line pinch and tangent pinch)
+- N_min computed by stage-stepping at total reflux
+
+**Controls**
+- Pressure slider (active for Antoine systems)
+- SI / °F·mmHg unit toggle
+- Keyboard: `Space` step · `A` all · `Esc` reset
+- Responsive: desktop, tablet, mobile
 
 ---
 
 ## Deploying / updating
 
-The entire tool is a single file: **`index.html`**. To update the tool, simply replace `index.html` with a new version and push to the `main` branch. GitHub Pages redeploys automatically within ~30 seconds.
-
-## Keyboard shortcuts
-
-| Key | Action |
-|---|---|
-| `Space` | Add one theoretical stage |
-| `A` | Show all stages at once |
-| `Esc` | Reset / clear stages |
+The entire tool is a single file: **`index.html`**. Replace it and push to `main` — GitHub Pages redeploys in ~30 seconds.
 
 ---
 
