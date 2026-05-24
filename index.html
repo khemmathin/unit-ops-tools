@@ -147,7 +147,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
   padding:6px 16px 8px;flex-shrink:0}
 .panel-ttl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
   color:var(--orange);text-transform:uppercase;margin-bottom:4px}
-#sensChart{width:100%;height:90px;display:block}
+#sensChart{width:100%;height:180px;display:block}
 
 /* alpha table */
 .alpha-wrap{border-top:1px solid var(--navy-mid);padding:6px 16px 10px;flex-shrink:0}
@@ -188,7 +188,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
         <input type="checkbox" id="unitTog" onchange="redrawDisplay()">
         <div class="ttr"></div><div class="tth"></div>
       </label>
-      °F/psi
+      °F / mmHg
     </div>
     <div class="hd-right">KU DEPT. CHEM. ENG.</div>
   </div>
@@ -266,9 +266,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
       <input type="number" class="sl-val" id="v-R" value="4.00" min="0.1" max="12" step="0.01" onchange="setP('R',clamp(+this.value,0.1,12))">
     </div>
     <div class="sl-row" id="sl-P-row">
-      <div class="sl-lbl" style="line-height:1.2"><em>P</em><br><span style="font-size:9px;color:var(--muted)">kPa</span></div>
+      <div class="sl-lbl" style="line-height:1.2"><em>P</em><br><span id="u-P-lbl" style="font-size:9px;color:var(--muted)">kPa</span></div>
       <input type="range" id="sl-P" min="20" max="400" step="1" value="101" oninput="setP('pressure',+this.value)">
-      <input type="number" class="sl-val" id="v-P" value="101" min="20" max="400" step="0.1" onchange="setP('pressure',clamp(+this.value,20,400))" title="kPa">
+      <input type="number" class="sl-val" id="v-P" value="101" min="20" max="400" step="0.1" onchange="setPressureInput(+this.value)" title="kPa">
     </div>
   </div>
 
@@ -323,7 +323,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
   </div>
   <div class="sens-wrap">
     <div class="panel-ttl">N theoretical vs R / R<sub>min</sub></div>
-    <svg id="sensChart" viewBox="0 0 900 90" preserveAspectRatio="xMidYMid meet"
+    <svg id="sensChart" viewBox="0 0 900 180" preserveAspectRatio="xMidYMid meet"
          xmlns="http://www.w3.org/2000/svg"></svg>
   </div>
   <div class="alpha-wrap">
@@ -750,7 +750,7 @@ function qLine(q,xF) {
 function drawSens(){
   if(!C||!VLE) return;
   const {xD,xB,q,xF}=P, Rmin=C.Rmin, xMax=VLE.xMax;
-  const W=900,H=90,ml=48,mr=16,mt=8,mb=32;
+  const W=900,H=180,ml=52,mr=16,mt=14,mb=42;
   const pw=W-ml-mr,ph=H-mt-mb;
   const maxRR=5,steps=40;
   const pts=[];
@@ -908,7 +908,7 @@ function setP(key,val){
   if(slEl&&key!=='xF') slEl.value=val;
   // Update display label
   if(key==='pressure'){
-    document.getElementById('v-P').value=val.toFixed(1);
+    updatePressureDisplay();
   } else {
     // sync number input (value=) not textContent
   if (key !== 'pressure') {
@@ -946,7 +946,7 @@ function loadSys(i){
   document.getElementById('v-q').value=P.q.toFixed(3);
   document.getElementById('q-desc').innerHTML=qDesc(P.q);
   document.getElementById('sl-P').value=P.pressure||101;
-  document.getElementById('v-P').value=(P.pressure||101).toFixed(1);
+  updatePressureDisplay();
   // Show/hide Antoine fields
   document.getElementById('antWrap').classList.toggle('show',sys.id==='cu');
   // Lock/unlock pressure slider
@@ -960,9 +960,29 @@ function onAntChange(){
   regenVLE(); fullRedraw();
 }
 
+function pIsSI(){ return !document.getElementById('unitTog').checked; }
+
+function updatePressureDisplay(){
+  const si=pIsSI(), kPa=P.pressure||101;
+  const el=document.getElementById('v-P'), lbl=document.getElementById('u-P-lbl');
+  if(si){
+    el.value=kPa.toFixed(1); el.min=20; el.max=400; el.step=0.1;
+    if(lbl) lbl.textContent='kPa';
+  } else {
+    el.value=(kPa*7.50062).toFixed(0); el.min=150; el.max=3000; el.step=1;
+    if(lbl) lbl.textContent='mmHg';
+  }
+  document.getElementById('sl-P').value=kPa;
+}
+
+function setPressureInput(displayVal){
+  const kPa = pIsSI() ? displayVal : displayVal/7.50062;
+  setP('pressure', clamp(kPa,20,400));
+}
+
 function redrawDisplay(){
-  drawAlpha(); // unit toggle only needs to redraw table and pressure label
-  document.getElementById('v-P').value=(P.pressure||101).toFixed(1);
+  drawAlpha();
+  updatePressureDisplay();
 }
 
 function stepOne()    {if(!C||!C.valid)return;if(nShown<C.stages.length){nShown++;drawDiagram();updateDisplay();}}
