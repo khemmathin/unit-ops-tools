@@ -5,59 +5,80 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Checkpoint — live responses</title>
 <style>
-:root{--primary:#4c4ddb;--primary-deep:#3a37b8;--primary-subdued:#dcdbfb;--ink:#16283f;--ink-secondary:#2c3f57;--ink-mute:#5f7189;--canvas:#fff;--canvas-soft:#f5f8fb;--canvas-cream:#f4ecdd;--hairline:#e5e7ef;--lemon:#946a28;--positive:#2f8f6a;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+:root{--primary:#4c4ddb;--primary-deep:#3a37b8;--primary-subdued:#dcdbfb;--ink:#16283f;--ink-secondary:#2c3f57;--ink-mute:#5f7189;--canvas:#fff;--canvas-soft:#f5f8fb;--canvas-cream:#f4ecdd;--hairline:#e5e7ef;--lemon:#946a28;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{background:var(--canvas);color:var(--ink);font-family:var(--sans);display:flex;flex-direction:column;overflow:hidden;cursor:pointer}
-.wrap{flex:1;min-height:0;display:flex;flex-direction:column;gap:16px;padding:22px 24px}
-.top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-bottom:1px solid var(--hairline);padding-bottom:12px}
-.n{font-family:var(--mono);font-size:34px;font-weight:400;line-height:1;color:var(--ink);font-feature-settings:'tnum' 1}
-.n span{font-size:20px;color:var(--ink-mute);margin-left:8px}
-.sec{font-family:var(--mono);font-size:17px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-mute);text-align:right;white-space:nowrap}
-.bars{flex:1;min-height:0;display:flex;flex-direction:column;gap:11px;justify-content:center}
-.row{display:grid;grid-template-columns:52px 1fr 60px;gap:14px;align-items:center}
-.key{font-family:var(--mono);font-size:23px;color:var(--ink-mute);text-align:right;font-feature-settings:'tnum' 1}
-.track{height:30px;background:var(--canvas-soft);border-radius:6px;overflow:hidden;position:relative}
+body{background:var(--canvas);color:var(--ink);font-family:var(--sans);display:flex;flex-direction:column;overflow:hidden}
+.wrap{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;padding:20px 22px 14px}
+.top{display:flex;align-items:center;gap:18px;border-bottom:1px solid var(--hairline);padding-bottom:12px}
+.timer{display:flex;align-items:baseline;gap:8px;padding:7px 14px;border-radius:9px;background:var(--canvas-soft);border:1px solid var(--hairline);flex:0 0 auto}
+.timer b{font-family:var(--mono);font-size:30px;font-weight:400;line-height:1;font-feature-settings:'tnum' 1}
+.timer i{font-style:normal;font-family:var(--mono);font-size:14px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink-mute)}
+.timer.warn{background:var(--canvas-cream);border-color:var(--lemon)}
+.timer.warn b,.timer.warn i{color:var(--lemon)}
+.timer.shut{background:var(--canvas-soft);border-color:var(--hairline)}
+.timer.shut b{font-size:20px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-mute)}
+.n{font-family:var(--mono);font-size:30px;font-weight:400;line-height:1;font-feature-settings:'tnum' 1;flex:0 0 auto}
+.n i{font-style:normal;font-size:17px;color:var(--ink-mute);margin-left:7px}
+.sec{margin-left:auto;font-family:var(--mono);font-size:15px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink-mute);text-align:right;line-height:1.3}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.hold{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;height:100%}
+.hold .l1{font-family:var(--mono);font-size:17px;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-mute);opacity:.8}
+.hold .l2{font-size:16px;line-height:1.4;color:var(--ink-mute);max-width:380px}
+.row{display:grid;grid-template-columns:48px 1fr 54px;gap:12px;align-items:center}
+.key{font-family:var(--mono);font-size:21px;color:var(--ink-mute);text-align:right;font-feature-settings:'tnum' 1}
+.track{height:26px;background:var(--canvas-soft);border-radius:6px;overflow:hidden}
 .fill{height:100%;background:var(--primary-subdued);border-radius:6px;transition:width .35s ease}
-.cnt{font-family:var(--mono);font-size:21px;color:var(--ink-mute);font-feature-settings:'tnum' 1}
-.row.hit .key{color:var(--primary-deep)}
+.cnt{font-family:var(--mono);font-size:19px;color:var(--ink-mute);font-feature-settings:'tnum' 1}
+.row.hit .key,.row.hit .cnt{color:var(--primary-deep)}
 .row.hit .fill{background:var(--primary)}
-.row.hit .cnt{color:var(--primary-deep)}
-.msg{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;text-align:center;padding:0 12px}
-.msg .l1{font-size:24px;font-weight:300;color:var(--ink-mute)}
-.msg .l2{font-size:19px;line-height:1.4;color:var(--ink-mute);max-width:420px}
-.band{font-family:var(--mono);font-size:17px;color:var(--primary-deep);background:var(--primary-subdued);border-radius:6px;padding:8px 12px;text-align:center}
-.hint{font-family:var(--mono);font-size:15px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-mute);text-align:center;opacity:.75}
+.band{font-family:var(--mono);font-size:16px;color:var(--primary-deep);background:var(--primary-subdued);border-radius:6px;padding:7px 11px;text-align:center}
+.foot{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.ctl{font-family:var(--mono);font-size:14px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink-mute);background:var(--canvas);border:1px solid var(--hairline);border-radius:7px;padding:7px 11px;cursor:pointer}
+.ctl:hover{border-color:var(--primary);color:var(--primary-deep)}
+.ctl[disabled]{opacity:.35;cursor:default}
+.msg{margin-left:auto;font-size:15px;color:var(--ink-mute);text-align:right}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="top"><div class="n" id="n">–<span>responded</span></div><div class="sec" id="sec"></div></div>
-<div class="bars" id="bars" hidden></div>
-<div class="msg" id="msg"><div class="l1" id="msg1">waiting for responses…</div><div class="l2" id="msg2" hidden></div></div>
+<div class="top">
+<div class="timer" id="timer"><b id="tv">–</b><i id="tu">s</i></div>
+<div class="n" id="n">0<i>responded</i></div>
+<div class="sec" id="sec"></div>
+</div>
+<div class="body">
+<div class="hold" id="hold"><div class="l1" id="hold1">results at time up</div><div class="l2" id="hold2">Answers are being counted. The distribution and the correct answer appear when the timer reaches zero.</div></div>
+<div id="bars" hidden></div>
 <div class="band" id="band" hidden></div>
-<div class="hint" id="hint" hidden>click to reveal</div>
+</div>
+<div class="foot">
+<button class="ctl" id="plus">+15 s</button>
+<button class="ctl" id="shut">Close now</button>
+<div class="msg" id="msg"></div>
+</div>
 </div>
 
 <script>
 (function () {
 'use strict';
 var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbwA6forNhaVMDWfjSKXdfDSuaE22YIo8lKwZMS4OgHVmqpSXvkyIFPrqQx5WzLXV04N/exec';
+var TERM = '2026S1';
 var qp = new URLSearchParams(location.search);
 var QID = (qp.get('q') || '').trim();
-var SEC = (qp.get('s') || '2026S1-A').trim();
+var RAW = (qp.get('s') || 'A').trim();
+var SEC = /^[AB]$/i.test(RAW) ? TERM + '-' + RAW.toUpperCase() : RAW;
 var API = qp.get('api') || API_DEFAULT;
 var INTERVAL = 2000, FAIL_AFTER = 10000;
 var $ = function (id) { return document.getElementById(id); };
+$('sec').textContent = SEC.replace(/^(\d{4})S(\d)-([AB])$/, 'Section $3 · $1S$2');
 
-$('sec').textContent = SEC.replace(/^(\d{4})S(\d)-([AB])$/, 'Section $3 · $1S$2') || SEC;
+var cfg = null, counts = null, n = 0;
+var revealed = false, opened = false, closedSent = false, flushed = false;
+var deadline = 0, tick = null, timer = null, active = false;
+var everData = false, firstFail = 0, sawParent = false;
 
-/* ---------- state ---------- */
-var cfg = null, counts = null, n = 0, revealed = false;
-var active = false, timer = null, everGotData = false, firstFailAt = 0, sawParent = false, flushed = false;
-
-/* ---------- JSONP (Apps Script drops CORS on its redirect hop) ---------- */
 var seq = 0;
 function jsonp(params, ok, fail) {
   var name = '__pcb' + (++seq) + '_' + Date.now(), s = document.createElement('script'), done = false;
@@ -73,6 +94,7 @@ function jsonp(params, ok, fail) {
   s.src = API + (API.indexOf('?') < 0 ? '?' : '&') + params + '&callback=' + name;
   document.head.appendChild(s);
 }
+var q = function () { return 'section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID); };
 
 /* ---------- grading · §4 of the build package ---------- */
 function isCorrect(given, c) {
@@ -87,41 +109,85 @@ function isCorrect(given, c) {
   }
 }
 function bandText(c) {
-  if (!c || c.type === 'select') return 'correct answer · ' + String(c && c.correct);
-  var cc = parseFloat(c.correct), t = parseFloat(c.tolerance);
-  var fmt = function (x) { return (Math.round(x * 1000) / 1000).toString(); };
-  if (c.mode === 'abs')    return 'accepted · ' + fmt(cc - t) + ' to ' + fmt(cc + t) + '  (±' + fmt(t) + ' absolute)';
-  if (c.mode === 'absval') return 'accepted · magnitude ' + fmt(Math.abs(cc) - t * Math.abs(cc)) + ' to ' + fmt(Math.abs(cc) + t * Math.abs(cc)) + '  (sign ignored)';
-  return 'accepted · ' + fmt(cc - t * Math.abs(cc)) + ' to ' + fmt(cc + t * Math.abs(cc)) + '  (±' + fmt(t * 100) + ' %)';
+  if (!c) return '';
+  if (c.type === 'select') return 'correct answer · ' + String(c.correct);
+  var cc = parseFloat(c.correct), t = parseFloat(c.tolerance), f = function (x) { return (Math.round(x * 1000) / 1000).toString(); };
+  if (c.mode === 'abs')    return 'accepted · ' + f(cc - t) + ' to ' + f(cc + t) + '  (±' + f(t) + ')';
+  if (c.mode === 'absval') return 'accepted · magnitude ' + f(Math.abs(cc) * (1 - t)) + ' to ' + f(Math.abs(cc) * (1 + t)) + '  (sign ignored)';
+  return 'accepted · ' + f(cc - t * Math.abs(cc)) + ' to ' + f(cc + t * Math.abs(cc)) + '  (±' + f(t * 100) + ' %)';
 }
 
-/* ---------- render ---------- */
-function fail(hard) {
-  $('bars').hidden = true; $('msg').hidden = false;
-  $('msg1').textContent = hard ? 'poll unavailable' : 'waiting for responses…';
-  $('msg2').hidden = !hard;
-  if (hard) $('msg2').textContent = 'answers are still being recorded';
-  $('n').innerHTML = (everGotData ? n : '–') + '<span>responded</span>';
+/* ---------- timer ---------- */
+function remaining() { return Math.max(0, Math.round((deadline - Date.now()) / 1000)); }
+function paintTimer() {
+  var r = remaining();
+  if (revealed) { $('timer').className = 'timer shut'; $('tv').textContent = 'closed'; $('tu').hidden = true; return; }
+  $('tu').hidden = false;
+  $('tv').textContent = r;
+  $('tu').textContent = 's';
+  $('timer').className = 'timer' + (r <= 10 ? ' warn' : '');
+  if (r <= 0) atZero();
 }
+function startTimer(secs) {
+  deadline = Date.now() + secs * 1000;
+  if (tick) clearInterval(tick);
+  tick = setInterval(paintTimer, 250);
+  paintTimer();
+}
+function stopTimer() { if (tick) { clearInterval(tick); tick = null; } }
+
+/* B2 · at zero: close, stop polling, reveal everything */
+function atZero() {
+  if (revealed) return;
+  stopTimer();
+  revealed = true;
+  poll(function () { render(); });          /* one last count, then show it */
+  if (timer) { clearInterval(timer); timer = null; }
+  if (!closedSent) { closedSent = true; jsonp('action=close&' + q(), function () {}, function () {}); }
+  doFlush();
+  paintTimer();
+  render();
+  $('plus').disabled = true; $('shut').disabled = true;
+  try { parent.postMessage({ type: 'uo.reveal', qid: QID }, '*'); } catch (e) {}
+}
+function doFlush() { if (flushed) return; flushed = true; jsonp('action=flush&' + q(), function () {}, function () {}); }
+
+/* ---------- render ---------- */
 function render() {
-  $('n').innerHTML = n + '<span>responded</span>';
+  $('n').innerHTML = (everData ? n : 0) + '<i>responded</i>';
+  /* B8 · no bars while the question is live */
+  if (!revealed) {
+    $('bars').hidden = true; $('band').hidden = true; $('hold').hidden = false;
+    if (!everData && firstFail && Date.now() - firstFail >= FAIL_AFTER) {
+      $('hold1').textContent = 'poll unavailable';
+      $('hold2').textContent = 'answers are still being recorded';
+    } else if (!everData) {
+      $('hold1').textContent = 'waiting for responses…';
+      $('hold2').textContent = 'The distribution and the correct answer appear when the timer reaches zero.';
+    } else {
+      $('hold1').textContent = 'results at time up';
+      $('hold2').textContent = 'Answers are being counted. The distribution and the correct answer appear when the timer reaches zero.';
+    }
+    return;
+  }
+  $('hold').hidden = true;
   var keys = Object.keys(counts || {});
-  if (!keys.length) { fail(false); $('hint').hidden = true; return; }
-  $('msg').hidden = true; $('bars').hidden = false;
+  if (!keys.length) {
+    $('bars').hidden = true; $('hold').hidden = false;
+    $('hold1').textContent = 'no responses'; $('hold2').textContent = 'Nobody answered before the question closed.';
+    $('band').hidden = !cfg; if (cfg) $('band').textContent = bandText(cfg);
+    return;
+  }
   var rows;
   if (cfg && cfg.type === 'select') {
     rows = ['A', 'B', 'C', 'D'].map(function (k) { return [k, counts[k] || 0]; });
     keys.forEach(function (k) { if (['A','B','C','D'].indexOf(String(k).toUpperCase()) < 0) rows.push([k, counts[k]]); });
   } else {
     rows = keys.map(function (k) { return [k, counts[k]]; });
-    rows.sort(function (a, b) {
-      var x = parseFloat(a[0]), y = parseFloat(b[0]);
-      if (isNaN(x) || isNaN(y)) return b[1] - a[1];
-      return x - y;
-    });
-    if (rows.length > 9) {
-      var byCount = rows.slice().sort(function (a, b) { return b[1] - a[1]; }).slice(0, 8);
-      var keep = {}; byCount.forEach(function (r) { keep[r[0]] = 1; });
+    rows.sort(function (a, b) { var x = parseFloat(a[0]), y = parseFloat(b[0]); return (isNaN(x) || isNaN(y)) ? b[1] - a[1] : x - y; });
+    if (rows.length > 8) {
+      var top = rows.slice().sort(function (a, b) { return b[1] - a[1]; }).slice(0, 7), keep = {};
+      top.forEach(function (r) { keep[r[0]] = 1; });
       var other = 0; rows.forEach(function (r) { if (!keep[r[0]]) other += r[1]; });
       rows = rows.filter(function (r) { return keep[r[0]]; });
       if (other) rows.push(['other', other]);
@@ -130,72 +196,73 @@ function render() {
   var max = 1; rows.forEach(function (r) { if (r[1] > max) max = r[1]; });
   var html = '';
   rows.forEach(function (r) {
-    var hit = revealed && r[0] !== 'other' && isCorrect(r[0], cfg);
+    var hit = r[0] !== 'other' && isCorrect(r[0], cfg);
     html += '<div class="row' + (hit ? ' hit' : '') + '"><div class="key">' + String(r[0]).replace(/[<>&]/g, '') +
-            '</div><div class="track"><div class="fill" style="width:' + Math.round(100 * r[1] / max) + '%"></div></div>' +
-            '<div class="cnt">' + r[1] + '</div></div>';
+            '</div><div class="track"><div class="fill" style="width:' + Math.round(100 * r[1] / max) + '%"></div></div><div class="cnt">' + r[1] + '</div></div>';
   });
   $('bars').innerHTML = html;
-  $('band').hidden = !(revealed && cfg);
-  if (revealed && cfg) $('band').textContent = bandText(cfg);
-  $('hint').hidden = revealed || !n;
+  $('bars').hidden = false;
+  $('bars').style.display = 'flex';
+  $('bars').style.flexDirection = 'column';
+  $('bars').style.gap = '9px';
+  $('band').hidden = !cfg;
+  if (cfg) $('band').textContent = bandText(cfg);
 }
 
 /* ---------- polling ---------- */
-function poll() {
-  jsonp('qid=' + encodeURIComponent(QID) + '&section=' + encodeURIComponent(SEC), function (d) {
-    if (d && typeof d.n === 'number') {
-      everGotData = true; firstFailAt = 0;
-      n = d.n; counts = d.counts || {};
-      render();
-    } else { onFail(); }
-  }, onFail);
+function poll(after) {
+  jsonp(q(), function (d) {
+    if (d && typeof d.n === 'number') { everData = true; firstFail = 0; n = d.n; counts = d.counts || {}; }
+    else if (!firstFail) firstFail = Date.now();
+    render(); if (after) after();
+  }, function () { if (!firstFail) firstFail = Date.now(); render(); if (after) after(); });
 }
-function onFail() {
-  if (!firstFailAt) firstFailAt = Date.now();
-  if (everGotData) { render(); return; }
-  fail(Date.now() - firstFailAt >= FAIL_AFTER);
+function openQuestion(secs) {
+  var extra = secs ? '&seconds=' + secs : '';
+  jsonp('action=open&' + q() + extra, function (st) {
+    opened = true;
+    var s = secs || (st && st.seconds) || (cfg && cfg.seconds) || 60;
+    startTimer(Number(s));
+    $('msg').textContent = '';
+  }, function () {
+    opened = true;
+    startTimer(Number(secs || (cfg && cfg.seconds) || 60));
+    $('msg').textContent = 'opened locally — server did not answer';
+  });
 }
 function setActive(on) {
   if (on === active) return;
   active = on;
   if (on) {
+    if (revealed) { paintTimer(); render(); return; }
+    /* re-entering a checkpoint restarts it (spec C8) */
+    closedSent = false; flushed = false;
     if (!timer) { poll(); timer = setInterval(poll, INTERVAL); }
+    openQuestion(0);
   } else {
     if (timer) { clearInterval(timer); timer = null; }
-    /* advancing past a checkpoint is what commits its data */
-    if (everGotData && n > 0) doFlush();
+    stopTimer();
+    if (everData && n > 0) doFlush();
   }
 }
-function doFlush() {
-  if (flushed) return; flushed = true;
-  jsonp('action=flush&qid=' + encodeURIComponent(QID) + '&section=' + encodeURIComponent(SEC), function () {}, function () {});
-}
-function reveal() {
-  if (revealed) return;
-  revealed = true;
-  render();
-  doFlush();
-}
 
-/* the deck drives this; a click on the panel also works */
+/* ---------- manual controls · B4 ---------- */
+$('plus').onclick = function () { if (revealed) return; openQuestion(remaining() + 15); };
+$('shut').onclick = function () { if (revealed) return; deadline = Date.now(); atZero(); };
+
 window.addEventListener('message', function (e) {
   var d = e.data;
-  if (!d || typeof d !== 'object') return;
-  if (d.type !== 'uo.poll') return;
+  if (!d || typeof d !== 'object' || d.type !== 'uo.poll') return;
   sawParent = true;
   if (typeof d.active === 'boolean') setActive(d.active);
-  if (d.reveal) reveal(); else if (d.reveal === false && d.resetReveal) { revealed = false; flushed = false; render(); }
+  if (d.reveal && !revealed) { deadline = Date.now(); atZero(); }   /* teacher override */
 }, false);
 
-document.addEventListener('click', reveal);
-document.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') reveal(); });
-
-/* standalone / messaging-failure fallback: if no deck ever speaks to us, poll anyway */
 setTimeout(function () { if (!sawParent) setActive(true); }, 2500);
 
-if (!QID) { $('msg1').textContent = 'no question code'; $('msg2').hidden = false; $('msg2').textContent = 'this panel needs ?q=<qid> in its address'; }
-else jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) { cfg = (d && !d.error) ? d : null; if (counts) render(); }, function () {});
+if (!QID) { $('hold1').textContent = 'no question code'; $('hold2').textContent = 'this panel needs ?q=<qid> in its address'; $('timer').hidden = true; }
+else jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) { cfg = (d && !d.error) ? d : null; render(); }, function () {});
+render();
 })();
 </script>
 </body>

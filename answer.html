@@ -9,28 +9,32 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%}
 body{background:var(--canvas-soft);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.45;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
-main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:22px 20px 8px;display:flex;flex-direction:column;gap:20px}
+main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:20px 20px 8px;display:flex;flex-direction:column;gap:18px}
 .eyebrow{display:flex;justify-content:space-between;align-items:baseline;gap:14px;font-family:var(--mono);font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-mute)}
+.clock{display:flex;align-items:baseline;gap:10px;padding:11px 16px;border-radius:10px;background:var(--canvas);border:1px solid var(--hairline)}
+.clock b{font-family:var(--mono);font-size:27px;font-weight:400;line-height:1;font-feature-settings:'tnum' 1}
+.clock span{font-size:14px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-mute)}
+.clock.warn{border-color:var(--lemon);background:var(--canvas-cream)}
+.clock.warn b{color:var(--lemon)}
 h1{font-size:23px;font-weight:500;line-height:1.28;letter-spacing:-.3px;margin:0;text-wrap:pretty}
 .sub{font-size:15px;color:var(--ink-mute);margin:0}
 label{display:block;font-size:14px;font-weight:500;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-mute);margin:0 0 9px}
 input{width:100%;font-family:var(--mono);font-size:26px;padding:15px 16px;min-height:60px;border:2px solid var(--hairline);border-radius:12px;background:var(--canvas);color:var(--ink);outline:none}
 input:focus{border-color:var(--primary)}
 button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
-.btn{width:100%;min-height:56px;border-radius:12px;background:var(--primary);color:#fff;font-size:19px;font-weight:500;letter-spacing:.2px;padding:16px}
+.btn{width:100%;min-height:56px;border-radius:12px;background:var(--primary);color:#fff;font-size:19px;font-weight:500;padding:16px}
 .btn:active{background:var(--primary-press)}
 .opts{display:flex;flex-direction:column;gap:12px}
 .opt{display:flex;gap:16px;align-items:center;text-align:left;width:100%;min-height:64px;padding:14px 18px;border:2px solid var(--hairline);border-radius:12px;background:var(--canvas);font-size:18px;line-height:1.35;color:var(--ink-secondary)}
 .opt:active{border-color:var(--primary);background:var(--primary-subdued)}
 .opt b{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--primary);flex:0 0 34px}
-.card{background:var(--canvas);border:1px solid var(--hairline);border-radius:14px;padding:20px}
-.done{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;background:var(--canvas);border:1px solid var(--hairline);border-radius:14px;padding:34px 22px}
+.done{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;background:var(--canvas);border:1px solid var(--hairline);border-radius:14px;padding:32px 22px}
 .tick{font-size:44px;line-height:1;color:var(--positive)}
 .done .h{font-size:22px;font-weight:500}
 .done .v{font-family:var(--mono);font-size:30px;color:var(--primary)}
 .note{font-size:15px;color:var(--ink-mute);margin:0}
-.warn{background:var(--canvas-cream);border:1px solid var(--lemon);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px}
-.warn .h{font-size:19px;font-weight:500;color:var(--lemon)}
+.warnbox{background:var(--canvas-cream);border:1px solid var(--lemon);border-radius:14px;padding:26px 22px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
+.warnbox .h{font-size:21px;font-weight:500;color:var(--lemon)}
 .link{font-size:14px;color:var(--primary);text-decoration:underline;padding:8px 0;min-height:36px}
 footer{border-top:1px solid var(--hairline);background:var(--canvas);padding:16px 20px 22px}
 footer p{max-width:560px;margin:0 auto;font-size:13px;line-height:1.5;color:var(--ink-mute)}
@@ -42,11 +46,14 @@ footer strong{color:var(--ink-secondary);font-weight:500}
 <body>
 <main>
 <div class="eyebrow"><span id="qlabel">checkpoint</span><span id="seclabel"></span></div>
+<div class="clock" id="clock" hidden><b id="clockVal">–</b><span id="clockUnit">seconds left</span></div>
+
+<section id="loadStep"><p class="sub">Checking whether this question is open…</p></section>
 
 <section id="idStep" hidden>
 <h1>Your student number</h1>
 <p class="sub">Entered once. This device remembers it for the rest of the session.</p>
-<div style="margin-top:18px"><label for="sid">Student number</label>
+<div style="margin-top:16px"><label for="sid">Student number</label>
 <input id="sid" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="6X10XXXXXX">
 <p class="err" id="sidErr" hidden>Enter your student number to continue.</p>
 <div style="margin-top:14px"><button class="btn" id="sidGo">Continue</button></div></div>
@@ -61,7 +68,7 @@ footer strong{color:var(--ink-secondary);font-weight:500}
 <p class="err" id="valErr" hidden>Enter a number.</p>
 <div style="margin-top:14px"><button class="btn" id="valGo">Submit</button></div>
 </div>
-<p class="note" id="idNote" style="margin-top:16px"></p>
+<p class="note" id="idNote" style="margin-top:14px"></p>
 </section>
 
 <section id="doneStep" hidden>
@@ -69,15 +76,20 @@ footer strong{color:var(--ink-secondary);font-weight:500}
 <p class="note">You can put your phone away. Answers are not graded for correctness.</p></div>
 </section>
 
+<section id="closedStep" hidden>
+<div class="warnbox"><div class="h">Time's up — this question has closed</div>
+<p class="note" id="closedWhy">Answers are no longer being accepted. The result is on the screen.</p></div>
+</section>
+
 <section id="dupStep" hidden>
-<div class="warn"><div class="h">Already answered</div>
+<div class="warnbox"><div class="h">Already answered</div>
 <p class="note">This device has already submitted an answer for this checkpoint. Only the first answer counts.</p>
 <p class="note" id="dupVal" style="font-family:var(--mono);color:var(--ink-secondary)"></p></div>
 </section>
 
 <section id="badStep" hidden>
-<div class="warn"><div class="h">Checkpoint not recognised</div>
-<p class="note" id="badMsg">This link is missing its question code. Please use the QR code or the address shown on the slide.</p></div>
+<div class="warnbox"><div class="h">Checkpoint not recognised</div>
+<p class="note">This link is missing its question code. Please use the QR code or the address shown on the slide.</p></div>
 </section>
 </main>
 
@@ -87,49 +99,68 @@ footer strong{color:var(--ink-secondary);font-weight:500}
 (function () {
 'use strict';
 var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbwA6forNhaVMDWfjSKXdfDSuaE22YIo8lKwZMS4OgHVmqpSXvkyIFPrqQx5WzLXV04N/exec';
+var TERM = '2026S1';                       /* short s=A expands against this term */
 var qp = new URLSearchParams(location.search);
 var QID = (qp.get('q') || '').trim();
-var SEC = (qp.get('s') || '2026S1-A').trim();
+var RAW = (qp.get('s') || 'A').trim();
+var SEC = /^[AB]$/i.test(RAW) ? TERM + '-' + RAW.toUpperCase() : RAW;
 var API = qp.get('api') || API_DEFAULT;
 var SID_KEY = 'uo.sid';
 var ansKey = function () { return 'uo.ans.' + SEC + '.' + QID; };
 var $ = function (id) { return document.getElementById(id); };
-var show = function (id) { ['idStep', 'answerStep', 'doneStep', 'dupStep', 'badStep'].forEach(function (s) { $(s).hidden = (s !== id); }); };
+var STEPS = ['loadStep', 'idStep', 'answerStep', 'doneStep', 'closedStep', 'dupStep', 'badStep'];
+var show = function (id) { STEPS.forEach(function (s) { $(s).hidden = (s !== id); }); };
 
-$('seclabel').textContent = SEC.replace(/^(\d{4})S(\d)-([AB])$/, 'Section $3 · $1S$2') || SEC;
+$('seclabel').textContent = SEC.replace(/^(\d{4})S(\d)-([AB])$/, 'Section $3 · $1S$2');
 $('qlabel').textContent = QID || 'no question code';
-
 if (!QID) { show('badStep'); return; }
 
-/* ---- JSONP: Apps Script drops CORS headers on its redirect hop ---- */
-var jsonpSeq = 0;
+var seq = 0;
 function jsonp(params, ok, fail) {
-  var name = '__uocb' + (++jsonpSeq) + '_' + Date.now();
-  var s = document.createElement('script');
-  var done = false;
-  var timer = setTimeout(function () { finish(null); }, 8000);
-  function finish(data) {
-    if (done) return; done = true;
-    clearTimeout(timer);
+  var name = '__uocb' + (++seq) + '_' + Date.now(), s = document.createElement('script'), done = false;
+  var t = setTimeout(function () { end(null); }, 8000);
+  function end(d) {
+    if (done) return; done = true; clearTimeout(t);
     try { delete window[name]; } catch (e) { window[name] = undefined; }
     if (s.parentNode) s.parentNode.removeChild(s);
-    if (data) ok(data); else if (fail) fail();
+    if (d) ok(d); else if (fail) fail();
   }
-  window[name] = function (d) { finish(d || {}); };
-  s.onerror = function () { finish(null); };
+  window[name] = function (d) { end(d || {}); };
+  s.onerror = function () { end(null); };
   s.src = API + (API.indexOf('?') < 0 ? '?' : '&') + params + '&callback=' + name;
   document.head.appendChild(s);
 }
 
-var cfg = null;
+var cfg = null, deadline = 0, tick = null;
+
+function remaining() { return Math.max(0, Math.round((deadline - Date.now()) / 1000)); }
+function startClock(secs) {
+  deadline = Date.now() + secs * 1000;
+  $('clock').hidden = false;
+  paint();
+  if (tick) clearInterval(tick);
+  tick = setInterval(paint, 250);
+}
+function paint() {
+  var r = remaining();
+  $('clockVal').textContent = r;
+  $('clockUnit').textContent = r === 1 ? 'second left' : 'seconds left';
+  $('clock').className = 'clock' + (r <= 10 ? ' warn' : '');
+  if (r <= 0) { stopClock(); closedNow('The time for this question ran out.'); }
+}
+function stopClock() { if (tick) { clearInterval(tick); tick = null; } }
+function closedNow(why) {
+  stopClock();
+  $('clock').hidden = true;
+  if (why) $('closedWhy').textContent = why + ' The result is on the screen.';
+  show('closedStep');
+}
 
 function renderAnswerStep() {
   var sid = localStorage.getItem(SID_KEY) || '';
   $('idNote').innerHTML = 'Answering as <span style="font-family:var(--mono);color:var(--ink-secondary)">' + sid.replace(/[<>&]/g, '') + '</span> &nbsp;<button class="link" id="reset">not you?</button>';
-  $('reset').onclick = function () { localStorage.removeItem(SID_KEY); start(); };
-  var label = (cfg && cfg.label) ? cfg.label : '';
-  $('prompt').textContent = label || 'Your answer';
-  if (label) $('qlabel').textContent = QID;
+  $('reset').onclick = function () { localStorage.removeItem(SID_KEY); begin(); };
+  $('prompt').textContent = (cfg && cfg.label) ? cfg.label : 'Your answer';
   var isSelect = !cfg || cfg.type !== 'numeric';
   $('selectBox').hidden = !isSelect;
   $('numberBox').hidden = isSelect;
@@ -154,25 +185,29 @@ function renderAnswerStep() {
 }
 
 function submit(answer) {
-  /* optimistic: the student never waits on the network */
+  if (remaining() <= 0) { closedNow('The time for this question ran out.'); return; }
   $('doneVal').textContent = answer;
+  stopClock(); $('clock').hidden = true;
   show('doneStep');
-  try { localStorage.setItem(ansKey(), answer); } catch (e) {}
   var body = new URLSearchParams();
   body.set('qid', QID); body.set('section', SEC);
   body.set('sid', localStorage.getItem(SID_KEY) || 'unknown');
   body.set('answer', answer);
-  /* no-cors: we cannot read the reply, and do not need to — the server holds
-     the authoritative duplicate guard; this is fire-and-forget. */
-  try {
-    fetch(API, { method: 'POST', mode: 'no-cors', body: body });
-  } catch (e) {
-    var img = new Image();
-    img.src = API + '?' + body.toString() + '&fallback=1';
-  }
+  /* no-cors: the reply is unreadable cross-origin, so the POST is fire-and-forget
+     and we re-read authoritative state straight afterwards to catch a rejection. */
+  try { fetch(API, { method: 'POST', mode: 'no-cors', body: body }); } catch (e) {}
+  try { localStorage.setItem(ansKey(), answer); } catch (e) {}
+  setTimeout(function () {
+    jsonp('action=state&section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID), function (st) {
+      if (st && st.open === false) {
+        try { localStorage.removeItem(ansKey()); } catch (e) {}
+        closedNow('This question closed as your answer was sent, so it was not recorded.');
+      }
+    });
+  }, 900);
 }
 
-function start() {
+function begin() {
   var prior = null;
   try { prior = localStorage.getItem(ansKey()); } catch (e) {}
   if (prior !== null) { $('dupVal').textContent = 'You answered: ' + prior; show('dupStep'); return; }
@@ -194,12 +229,25 @@ function start() {
   renderAnswerStep();
 }
 
-/* config is a nicety — it supplies the question label and the input type.
-   If it fails we still let the student answer, defaulting to select. */
-jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) {
-  cfg = (d && !d.error) ? d : null;
-  start();
-}, function () { cfg = null; start(); });
+/* state first — a closed question never renders an input */
+jsonp('action=state&section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID), function (st) {
+  if (!st || st.open !== true) {
+    closedNow(st && st.reason === 'not opened' ? 'This question has not been opened yet.' : 'The time for this question ran out.');
+    if (st && st.reason === 'not opened') $('closedWhy').textContent = 'This question has not been opened yet. Wait for it to appear on the screen.';
+    return;
+  }
+  startClock(typeof st.remaining === 'number' ? st.remaining : 60);
+  jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) {
+    cfg = (d && !d.error) ? d : null; begin();
+  }, function () { cfg = null; begin(); });
+}, function () {
+  /* state unreachable: let them answer rather than blocking the room on a network blip */
+  jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) {
+    cfg = (d && !d.error) ? d : null;
+    startClock(cfg && cfg.seconds ? Number(cfg.seconds) : 60);
+    begin();
+  }, function () { cfg = null; startClock(60); begin(); });
+});
 })();
 </script>
 </body>
