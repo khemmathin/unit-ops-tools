@@ -64,10 +64,11 @@ footer strong{color:var(--ink-secondary);font-weight:500}
 <div id="selectBox" hidden><div class="opts" id="opts"></div></div>
 <div id="numberBox" hidden>
 <label for="val">Answer</label>
-<input id="val" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="e.g. 1141">
+<input id="val" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="number">
 <p class="err" id="valErr" hidden>Enter a number.</p>
 <div style="margin-top:14px"><button class="btn" id="valGo">Submit</button></div>
 </div>
+<p class="note" id="bothNote" hidden style="margin-top:14px">Choose a letter, or type a number if the question asks for one.</p>
 <p class="note" id="idNote" style="margin-top:14px"></p>
 </section>
 
@@ -160,11 +161,16 @@ function renderAnswerStep() {
   var sid = localStorage.getItem(SID_KEY) || '';
   $('idNote').innerHTML = 'Answering as <span style="font-family:var(--mono);color:var(--ink-secondary)">' + sid.replace(/[<>&]/g, '') + '</span> &nbsp;<button class="link" id="reset">not you?</button>';
   $('reset').onclick = function () { localStorage.removeItem(SID_KEY); begin(); };
-  $('prompt').textContent = (cfg && cfg.label) ? cfg.label : 'Your answer';
-  var isSelect = !cfg || cfg.type !== 'numeric';
-  $('selectBox').hidden = !isSelect;
-  $('numberBox').hidden = isSelect;
-  if (isSelect) {
+  $('prompt').textContent = 'Your answer';
+  // B11 · the student page is told the answer's shape, never its value. No label,
+  // no correct, no tolerance, no mode — none of it reaches this document.
+  var t = (cfg && cfg.type) || 'unknown';
+  var wantSelect = (t !== 'numeric');
+  var wantNumber = (t === 'numeric' || t === 'unknown');
+  $('selectBox').hidden = !wantSelect;
+  $('numberBox').hidden = !wantNumber;
+  $('bothNote').hidden = !(wantSelect && wantNumber);
+  if (wantSelect) {
     var box = $('opts'); box.innerHTML = '';
     ['A', 'B', 'C', 'D'].forEach(function (L) {
       var b = document.createElement('button');
@@ -174,6 +180,14 @@ function renderAnswerStep() {
       box.appendChild(b);
     });
   } else {
+    $('valGo').onclick = function () {
+      var v = $('val').value.trim();
+      if (v === '' || isNaN(parseFloat(v))) { $('valErr').hidden = false; return; }
+      $('valErr').hidden = true; submit(v);
+    };
+    $('val').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('valGo').click(); });
+  }
+  if (wantNumber && wantSelect) {
     $('valGo').onclick = function () {
       var v = $('val').value.trim();
       if (v === '' || isNaN(parseFloat(v))) { $('valErr').hidden = false; return; }
@@ -229,25 +243,37 @@ function begin() {
   renderAnswerStep();
 }
 
-/* state first — a closed question never renders an input */
-jsonp('action=state&section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID), function (st) {
-  if (!st || st.open !== true) {
-    closedNow(st && st.reason === 'not opened' ? 'This question has not been opened yet.' : 'The time for this question ran out.');
-    if (st && st.reason === 'not opened') $('closedWhy').textContent = 'This question has not been opened yet. Wait for it to appear on the screen.';
+/* B12 · studentconfig returns only qid, type, seconds, remaining and open.
+   action=config is never called from here: it carries correct, tolerance and mode,
+   all of which are readable in a phone's network tab even if never rendered. */
+function boot(sc) {
+  cfg = (sc && !sc.error && sc.type) ? { type: sc.type } : { type: 'unknown' };
+  if (sc && sc.open === false) {
+    if (sc.reason === 'not opened') { closedNow(null); $('closedWhy').textContent = 'This question has not been opened yet. Wait for it to appear on the screen.'; }
+    else closedNow('The time for this question ran out.');
     return;
   }
-  startClock(typeof st.remaining === 'number' ? st.remaining : 60);
-  jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) {
-    cfg = (d && !d.error) ? d : null; begin();
-  }, function () { cfg = null; begin(); });
-}, function () {
-  /* state unreachable: let them answer rather than blocking the room on a network blip */
-  jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) {
-    cfg = (d && !d.error) ? d : null;
-    startClock(cfg && cfg.seconds ? Number(cfg.seconds) : 60);
-    begin();
-  }, function () { cfg = null; startClock(60); begin(); });
-});
+  var left = (sc && sc.remaining != null) ? sc.remaining : (sc && sc.seconds);
+  startClock(Number(left || 60));
+  begin();
+}
+
+function fallback() {
+  /* studentconfig not deployed yet — use timer state only and offer both input
+     shapes, rather than asking config and leaking the answer to get the type. */
+  jsonp('action=state&section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID), function (st) {
+    if (!st || st.open !== true) {
+      if (st && st.reason === 'not opened') { closedNow(null); $('closedWhy').textContent = 'This question has not been opened yet. Wait for it to appear on the screen.'; }
+      else closedNow('The time for this question ran out.');
+      return;
+    }
+    boot({ open: true, remaining: st.remaining, seconds: st.seconds });
+  }, function () { boot({ open: true, seconds: 60 }); });
+}
+
+jsonp('action=studentconfig&qid=' + encodeURIComponent(QID) + '&section=' + encodeURIComponent(SEC),
+  function (d) { if (!d || d.error || !d.type) { fallback(); return; } boot(d); },
+  fallback);
 })();
 </script>
 </body>
