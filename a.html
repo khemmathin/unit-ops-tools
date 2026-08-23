@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Checkpoint — answer</title>
+<style>
+:root{--primary:#4c4ddb;--primary-deep:#3a37b8;--primary-press:#292a7a;--primary-subdued:#dcdbfb;--ink:#16283f;--ink-secondary:#2c3f57;--ink-mute:#5f7189;--canvas:#fff;--canvas-soft:#f5f8fb;--canvas-cream:#f4ecdd;--hairline:#e5e7ef;--lemon:#946a28;--positive:#2f8f6a;--ruby:#c93a66;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{background:var(--canvas-soft);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.45;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:20px 20px 8px;display:flex;flex-direction:column;gap:18px}
+.eyebrow{display:flex;justify-content:space-between;align-items:baseline;gap:14px;font-family:var(--mono);font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-mute)}
+.clock{display:flex;align-items:baseline;gap:10px;padding:11px 16px;border-radius:10px;background:var(--canvas);border:1px solid var(--hairline)}
+.clock b{font-family:var(--mono);font-size:27px;font-weight:400;line-height:1;font-feature-settings:'tnum' 1}
+.clock span{font-size:14px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-mute)}
+.clock.warn{border-color:var(--lemon);background:var(--canvas-cream)}
+.clock.warn b{color:var(--lemon)}
+h1{font-size:23px;font-weight:500;line-height:1.28;letter-spacing:-.3px;margin:0;text-wrap:pretty}
+.sub{font-size:15px;color:var(--ink-mute);margin:0}
+label{display:block;font-size:14px;font-weight:500;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-mute);margin:0 0 9px}
+input{width:100%;font-family:var(--mono);font-size:26px;padding:15px 16px;min-height:60px;border:2px solid var(--hairline);border-radius:12px;background:var(--canvas);color:var(--ink);outline:none}
+input:focus{border-color:var(--primary)}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.btn{width:100%;min-height:56px;border-radius:12px;background:var(--primary);color:#fff;font-size:19px;font-weight:500;padding:16px}
+.btn:active{background:var(--primary-press)}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{display:flex;gap:16px;align-items:center;text-align:left;width:100%;min-height:64px;padding:14px 18px;border:2px solid var(--hairline);border-radius:12px;background:var(--canvas);font-size:18px;line-height:1.35;color:var(--ink-secondary)}
+.opt:active{border-color:var(--primary);background:var(--primary-subdued)}
+.opt b{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--primary);flex:0 0 34px}
+.done{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;background:var(--canvas);border:1px solid var(--hairline);border-radius:14px;padding:32px 22px}
+.tick{font-size:44px;line-height:1;color:var(--positive)}
+.done .h{font-size:22px;font-weight:500}
+.done .v{font-family:var(--mono);font-size:30px;color:var(--primary)}
+.note{font-size:15px;color:var(--ink-mute);margin:0}
+.warnbox{background:var(--canvas-cream);border:1px solid var(--lemon);border-radius:14px;padding:26px 22px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
+.warnbox .h{font-size:21px;font-weight:500;color:var(--lemon)}
+.link{font-size:14px;color:var(--primary);text-decoration:underline;padding:8px 0;min-height:36px}
+footer{border-top:1px solid var(--hairline);background:var(--canvas);padding:16px 20px 22px}
+footer p{max-width:560px;margin:0 auto;font-size:13px;line-height:1.5;color:var(--ink-mute)}
+footer strong{color:var(--ink-secondary);font-weight:500}
+.err{font-size:15px;color:var(--ruby);margin:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow"><span id="qlabel">checkpoint</span><span id="seclabel"></span></div>
+<div class="clock" id="clock" hidden><b id="clockVal">–</b><span id="clockUnit">seconds left</span></div>
+
+<section id="loadStep"><p class="sub">Checking whether this question is open…</p></section>
+
+<section id="idStep" hidden>
+<h1>Your student number</h1>
+<p class="sub">Entered once. This device remembers it for the rest of the session.</p>
+<div style="margin-top:16px"><label for="sid">Student number</label>
+<input id="sid" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="6X10XXXXXX">
+<p class="err" id="sidErr" hidden>Enter your student number to continue.</p>
+<div style="margin-top:14px"><button class="btn" id="sidGo">Continue</button></div></div>
+</section>
+
+<section id="answerStep" hidden>
+<h1 id="prompt">Your answer</h1>
+<div id="selectBox" hidden><div class="opts" id="opts"></div></div>
+<div id="numberBox" hidden>
+<label for="val">Answer</label>
+<input id="val" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="e.g. 1141">
+<p class="err" id="valErr" hidden>Enter a number.</p>
+<div style="margin-top:14px"><button class="btn" id="valGo">Submit</button></div>
+</div>
+<p class="note" id="idNote" style="margin-top:14px"></p>
+</section>
+
+<section id="doneStep" hidden>
+<div class="done"><div class="tick">&#10003;</div><div class="h">Submitted</div><div class="v" id="doneVal"></div>
+<p class="note">You can put your phone away. Answers are not graded for correctness.</p></div>
+</section>
+
+<section id="closedStep" hidden>
+<div class="warnbox"><div class="h">Time's up — this question has closed</div>
+<p class="note" id="closedWhy">Answers are no longer being accepted. The result is on the screen.</p></div>
+</section>
+
+<section id="dupStep" hidden>
+<div class="warnbox"><div class="h">Already answered</div>
+<p class="note">This device has already submitted an answer for this checkpoint. Only the first answer counts.</p>
+<p class="note" id="dupVal" style="font-family:var(--mono);color:var(--ink-secondary)"></p></div>
+</section>
+
+<section id="badStep" hidden>
+<div class="warnbox"><div class="h">Checkpoint not recognised</div>
+<p class="note">This link is missing its question code. Please use the QR code or the address shown on the slide.</p></div>
+</section>
+</main>
+
+<footer><p>Your student number is recorded for attendance and to help improve teaching. <strong>Checkpoint answers are never graded for correctness</strong> — only participation is noted. Records are deleted at the end of the academic year.</p></footer>
+
+<script>
+(function () {
+'use strict';
+var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbwA6forNhaVMDWfjSKXdfDSuaE22YIo8lKwZMS4OgHVmqpSXvkyIFPrqQx5WzLXV04N/exec';
+var TERM = '2026S1';                       /* short s=A expands against this term */
+var qp = new URLSearchParams(location.search);
+var QID = (qp.get('q') || '').trim();
+var RAW = (qp.get('s') || 'A').trim();
+var SEC = /^[AB]$/i.test(RAW) ? TERM + '-' + RAW.toUpperCase() : RAW;
+var API = qp.get('api') || API_DEFAULT;
+var SID_KEY = 'uo.sid';
+var ansKey = function () { return 'uo.ans.' + SEC + '.' + QID; };
+var $ = function (id) { return document.getElementById(id); };
+var STEPS = ['loadStep', 'idStep', 'answerStep', 'doneStep', 'closedStep', 'dupStep', 'badStep'];
+var show = function (id) { STEPS.forEach(function (s) { $(s).hidden = (s !== id); }); };
+
+$('seclabel').textContent = SEC.replace(/^(\d{4})S(\d)-([AB])$/, 'Section $3 · $1S$2');
+$('qlabel').textContent = QID || 'no question code';
+if (!QID) { show('badStep'); return; }
+
+var seq = 0;
+function jsonp(params, ok, fail) {
+  var name = '__uocb' + (++seq) + '_' + Date.now(), s = document.createElement('script'), done = false;
+  var t = setTimeout(function () { end(null); }, 8000);
+  function end(d) {
+    if (done) return; done = true; clearTimeout(t);
+    try { delete window[name]; } catch (e) { window[name] = undefined; }
+    if (s.parentNode) s.parentNode.removeChild(s);
+    if (d) ok(d); else if (fail) fail();
+  }
+  window[name] = function (d) { end(d || {}); };
+  s.onerror = function () { end(null); };
+  s.src = API + (API.indexOf('?') < 0 ? '?' : '&') + params + '&callback=' + name;
+  document.head.appendChild(s);
+}
+
+var cfg = null, deadline = 0, tick = null;
+
+function remaining() { return Math.max(0, Math.round((deadline - Date.now()) / 1000)); }
+function startClock(secs) {
+  deadline = Date.now() + secs * 1000;
+  $('clock').hidden = false;
+  paint();
+  if (tick) clearInterval(tick);
+  tick = setInterval(paint, 250);
+}
+function paint() {
+  var r = remaining();
+  $('clockVal').textContent = r;
+  $('clockUnit').textContent = r === 1 ? 'second left' : 'seconds left';
+  $('clock').className = 'clock' + (r <= 10 ? ' warn' : '');
+  if (r <= 0) { stopClock(); closedNow('The time for this question ran out.'); }
+}
+function stopClock() { if (tick) { clearInterval(tick); tick = null; } }
+function closedNow(why) {
+  stopClock();
+  $('clock').hidden = true;
+  if (why) $('closedWhy').textContent = why + ' The result is on the screen.';
+  show('closedStep');
+}
+
+function renderAnswerStep() {
+  var sid = localStorage.getItem(SID_KEY) || '';
+  $('idNote').innerHTML = 'Answering as <span style="font-family:var(--mono);color:var(--ink-secondary)">' + sid.replace(/[<>&]/g, '') + '</span> &nbsp;<button class="link" id="reset">not you?</button>';
+  $('reset').onclick = function () { localStorage.removeItem(SID_KEY); begin(); };
+  $('prompt').textContent = (cfg && cfg.label) ? cfg.label : 'Your answer';
+  var isSelect = !cfg || cfg.type !== 'numeric';
+  $('selectBox').hidden = !isSelect;
+  $('numberBox').hidden = isSelect;
+  if (isSelect) {
+    var box = $('opts'); box.innerHTML = '';
+    ['A', 'B', 'C', 'D'].forEach(function (L) {
+      var b = document.createElement('button');
+      b.className = 'opt'; b.type = 'button';
+      b.innerHTML = '<b>' + L + '</b><span>Choose ' + L + '</span>';
+      b.onclick = function () { submit(L); };
+      box.appendChild(b);
+    });
+  } else {
+    $('valGo').onclick = function () {
+      var v = $('val').value.trim();
+      if (v === '' || isNaN(parseFloat(v))) { $('valErr').hidden = false; return; }
+      $('valErr').hidden = true; submit(v);
+    };
+    $('val').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('valGo').click(); });
+  }
+  show('answerStep');
+}
+
+function submit(answer) {
+  if (remaining() <= 0) { closedNow('The time for this question ran out.'); return; }
+  $('doneVal').textContent = answer;
+  stopClock(); $('clock').hidden = true;
+  show('doneStep');
+  var body = new URLSearchParams();
+  body.set('qid', QID); body.set('section', SEC);
+  body.set('sid', localStorage.getItem(SID_KEY) || 'unknown');
+  body.set('answer', answer);
+  /* no-cors: the reply is unreadable cross-origin, so the POST is fire-and-forget
+     and we re-read authoritative state straight afterwards to catch a rejection. */
+  try { fetch(API, { method: 'POST', mode: 'no-cors', body: body }); } catch (e) {}
+  try { localStorage.setItem(ansKey(), answer); } catch (e) {}
+  setTimeout(function () {
+    jsonp('action=state&section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID), function (st) {
+      if (st && st.open === false) {
+        try { localStorage.removeItem(ansKey()); } catch (e) {}
+        closedNow('This question closed as your answer was sent, so it was not recorded.');
+      }
+    });
+  }, 900);
+}
+
+function begin() {
+  var prior = null;
+  try { prior = localStorage.getItem(ansKey()); } catch (e) {}
+  if (prior !== null) { $('dupVal').textContent = 'You answered: ' + prior; show('dupStep'); return; }
+  var sid = null;
+  try { sid = localStorage.getItem(SID_KEY); } catch (e) {}
+  if (!sid) {
+    show('idStep');
+    $('sidGo').onclick = function () {
+      var v = $('sid').value.trim();
+      if (!v) { $('sidErr').hidden = false; return; }
+      $('sidErr').hidden = true;
+      try { localStorage.setItem(SID_KEY, v); } catch (e) {}
+      renderAnswerStep();
+    };
+    $('sid').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('sidGo').click(); });
+    setTimeout(function () { $('sid').focus(); }, 120);
+    return;
+  }
+  renderAnswerStep();
+}
+
+/* state first — a closed question never renders an input */
+jsonp('action=state&section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID), function (st) {
+  if (!st || st.open !== true) {
+    closedNow(st && st.reason === 'not opened' ? 'This question has not been opened yet.' : 'The time for this question ran out.');
+    if (st && st.reason === 'not opened') $('closedWhy').textContent = 'This question has not been opened yet. Wait for it to appear on the screen.';
+    return;
+  }
+  startClock(typeof st.remaining === 'number' ? st.remaining : 60);
+  jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) {
+    cfg = (d && !d.error) ? d : null; begin();
+  }, function () { cfg = null; begin(); });
+}, function () {
+  /* state unreachable: let them answer rather than blocking the room on a network blip */
+  jsonp('action=config&qid=' + encodeURIComponent(QID), function (d) {
+    cfg = (d && !d.error) ? d : null;
+    startClock(cfg && cfg.seconds ? Number(cfg.seconds) : 60);
+    begin();
+  }, function () { cfg = null; startClock(60); begin(); });
+});
+})();
+</script>
+</body>
+</html>
