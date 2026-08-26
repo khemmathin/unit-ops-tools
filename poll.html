@@ -12,14 +12,12 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--sans);display:f
 .wrap{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;padding:20px 22px 14px}
 .top{display:flex;align-items:center;gap:18px;border-bottom:1px solid var(--hairline);padding-bottom:12px}
 .timer{display:flex;align-items:baseline;gap:8px;padding:7px 14px;border-radius:9px;background:var(--canvas-soft);border:1px solid var(--hairline);flex:0 0 auto}
-.timer b{font-family:var(--mono);font-size:30px;font-weight:400;line-height:1;font-feature-settings:'tnum' 1}
+.timer b{font-family:var(--mono);font-size:18px;font-weight:400;line-height:1;color:var(--ink-mute);font-feature-settings:'tnum' 1}
 .timer i{font-style:normal;font-family:var(--mono);font-size:14px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink-mute)}
-.timer.warn{background:var(--canvas-cream);border-color:var(--lemon)}
-.timer.warn b,.timer.warn i{color:var(--lemon)}
 .timer.shut{background:var(--canvas-soft);border-color:var(--hairline)}
 .timer.shut b{font-size:20px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-mute)}
-.n{font-family:var(--mono);font-size:30px;font-weight:400;line-height:1;font-feature-settings:'tnum' 1;flex:0 0 auto}
-.n i{font-style:normal;font-size:17px;color:var(--ink-mute);margin-left:7px}
+.n{font-family:var(--mono);font-size:48px;font-weight:400;line-height:1;font-feature-settings:'tnum' 1;flex:0 0 auto}
+.n i{font-style:normal;font-size:19px;color:var(--ink-mute);margin-left:9px}
 .sec{margin-left:auto;font-family:var(--mono);font-size:15px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink-mute);text-align:right;line-height:1.3}
 .body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
 .hold{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;height:100%}
@@ -34,8 +32,8 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--sans);display:f
 .row.hit .fill{background:var(--primary)}
 .band{font-family:var(--mono);font-size:16px;color:var(--primary-deep);background:var(--primary-subdued);border-radius:6px;padding:7px 11px;text-align:center}
 .foot{display:flex;align-items:center;gap:10px;flex:0 0 auto}
-.ctl{font-family:var(--mono);font-size:14px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink-mute);background:var(--canvas);border:1px solid var(--hairline);border-radius:7px;padding:7px 11px;cursor:pointer}
-.ctl:hover{border-color:var(--primary);color:var(--primary-deep)}
+.ctl{font-family:var(--mono);font-size:17px;letter-spacing:1.4px;text-transform:uppercase;color:#fff;background:var(--primary);border:1px solid var(--primary);border-radius:8px;padding:13px 30px;cursor:pointer}
+.ctl:hover{background:var(--primary-deep);border-color:var(--primary-deep)}
 .ctl[disabled]{opacity:.35;cursor:default}
 .msg{margin-left:auto;font-size:15px;color:var(--ink-mute);text-align:right}
 [hidden]{display:none!important}
@@ -44,18 +42,17 @@ body{background:var(--canvas);color:var(--ink);font-family:var(--sans);display:f
 <body>
 <div class="wrap">
 <div class="top">
-<div class="timer" id="timer"><b id="tv">–</b><i id="tu">s</i></div>
 <div class="n" id="n">0<i>responded</i></div>
+<div class="timer" id="timer"><b id="tv">0:00</b></div>
 <div class="sec" id="sec"></div>
 </div>
 <div class="body">
-<div class="hold" id="hold"><div class="l1" id="hold1">results at time up</div><div class="l2" id="hold2">Answers are being counted. The distribution and the correct answer appear when the timer reaches zero.</div></div>
+<div class="hold" id="hold"><div class="l1" id="hold1">results when closed</div><div class="l2" id="hold2">Answers are being counted. The distribution and the correct answer appear when you close the question.</div></div>
 <div id="bars" hidden></div>
 <div class="band" id="band" hidden></div>
 </div>
 <div class="foot">
-<button class="ctl" id="plus">+15 s</button>
-<button class="ctl" id="shut">Close now</button>
+<button class="ctl" id="shut">Close</button>
 <div class="msg" id="msg"></div>
 </div>
 </div>
@@ -76,7 +73,7 @@ $('sec').textContent = SEC.replace(/^(\d{4})S(\d)-([AB])$/, 'Section $3 · $1S$2
 
 var cfg = null, counts = null, n = 0;
 var revealed = false, opened = false, closedSent = false, flushed = false;
-var deadline = 0, tick = null, timer = null, active = false;
+var startedAt = 0, tick = null, timer = null, active = false;
 var everData = false, firstFail = 0, sawParent = false;
 
 var seq = 0;
@@ -117,27 +114,28 @@ function bandText(c) {
   return 'accepted · ' + f(cc - t * Math.abs(cc)) + ' to ' + f(cc + t * Math.abs(cc)) + '  (±' + f(t * 100) + ' %)';
 }
 
-/* ---------- timer ---------- */
-function remaining() { return Math.max(0, Math.round((deadline - Date.now()) / 1000)); }
+/* ---------- elapsed · v3 ---------- */
+/* This counts UP and closes nothing. It exists so the lecturer can see how long
+   a checkpoint has been running; the cue to close is the response count going
+   flat, not this number. Kept deliberately small and muted — it must not read
+   as a clock from the back of the room. */
 function paintTimer() {
-  var r = remaining();
-  if (revealed) { $('timer').className = 'timer shut'; $('tv').textContent = 'closed'; $('tu').hidden = true; return; }
-  $('tu').hidden = false;
-  $('tv').textContent = r;
-  $('tu').textContent = 's';
-  $('timer').className = 'timer' + (r <= 10 ? ' warn' : '');
-  if (r <= 0) atZero();
+  if (revealed) { $('timer').className = 'timer shut'; $('tv').textContent = 'closed'; return; }
+  var e = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+  $('tv').textContent = Math.floor(e / 60) + ':' + ('0' + (e % 60)).slice(-2);
+  $('timer').className = 'timer';
 }
-function startTimer(secs) {
-  deadline = Date.now() + secs * 1000;
+function startTimer() {
+  startedAt = Date.now();
   if (tick) clearInterval(tick);
-  tick = setInterval(paintTimer, 250);
+  tick = setInterval(paintTimer, 1000);
   paintTimer();
 }
 function stopTimer() { if (tick) { clearInterval(tick); tick = null; } }
 
-/* B2 · at zero: close, stop polling, reveal everything */
-function atZero() {
+/* v3 · the lecturer closes: close, stop polling, reveal everything.
+   Nothing else calls this — there is no expiry. */
+function closeNow() {
   if (revealed) return;
   stopTimer();
   revealed = true;
@@ -147,7 +145,7 @@ function atZero() {
   doFlush();
   paintTimer();
   render();
-  $('plus').disabled = true; $('shut').disabled = true;
+  $('shut').disabled = true;
   try { parent.postMessage({ type: 'uo.reveal', qid: QID }, '*'); } catch (e) {}
 }
 function doFlush() { if (flushed) return; flushed = true; jsonp('action=flush&' + q(), function () {}, function () {}); }
@@ -163,10 +161,10 @@ function render() {
       $('hold2').textContent = 'answers are still being recorded';
     } else if (!everData) {
       $('hold1').textContent = 'waiting for responses…';
-      $('hold2').textContent = 'The distribution and the correct answer appear when the timer reaches zero.';
+      $('hold2').textContent = 'The distribution and the correct answer appear when you close the question.';
     } else {
-      $('hold1').textContent = 'results at time up';
-      $('hold2').textContent = 'Answers are being counted. The distribution and the correct answer appear when the timer reaches zero.';
+      $('hold1').textContent = 'results when closed';
+      $('hold2').textContent = 'Answers are being counted. The distribution and the correct answer appear when you close the question.';
     }
     return;
   }
@@ -174,7 +172,7 @@ function render() {
   var keys = Object.keys(counts || {});
   if (!keys.length) {
     $('bars').hidden = true; $('hold').hidden = false;
-    $('hold1').textContent = 'no responses'; $('hold2').textContent = 'Nobody answered before the question closed.';
+    $('hold1').textContent = 'no responses'; $('hold2').textContent = 'Nobody answered before the question was closed.';
     $('band').hidden = !cfg; if (cfg) $('band').textContent = bandText(cfg);
     return;
   }
@@ -217,16 +215,14 @@ function poll(after) {
     render(); if (after) after();
   }, function () { if (!firstFail) firstFail = Date.now(); render(); if (after) after(); });
 }
-function openQuestion(secs) {
-  var extra = secs ? '&seconds=' + secs : '';
-  jsonp('action=open&' + q() + extra, function (st) {
+function openQuestion() {
+  jsonp('action=open&' + q(), function () {
     opened = true;
-    var s = secs || (st && st.seconds) || (cfg && cfg.seconds) || 60;
-    startTimer(Number(s));
+    startTimer();
     $('msg').textContent = '';
   }, function () {
     opened = true;
-    startTimer(Number(secs || (cfg && cfg.seconds) || 60));
+    startTimer();
     $('msg').textContent = 'opened locally — server did not answer';
   });
 }
@@ -238,7 +234,7 @@ function setActive(on) {
     /* re-entering a checkpoint restarts it (spec C8) */
     closedSent = false; flushed = false;
     if (!timer) { poll(); timer = setInterval(poll, INTERVAL); }
-    openQuestion(0);
+    openQuestion();
   } else {
     if (timer) { clearInterval(timer); timer = null; }
     stopTimer();
@@ -246,16 +242,15 @@ function setActive(on) {
   }
 }
 
-/* ---------- manual controls · B4 ---------- */
-$('plus').onclick = function () { if (revealed) return; openQuestion(remaining() + 15); };
-$('shut').onclick = function () { if (revealed) return; deadline = Date.now(); atZero(); };
+/* ---------- the only control · v3 ---------- */
+$('shut').onclick = function () { if (revealed) return; closeNow(); };
 
 window.addEventListener('message', function (e) {
   var d = e.data;
   if (!d || typeof d !== 'object' || d.type !== 'uo.poll') return;
   sawParent = true;
   if (typeof d.active === 'boolean') setActive(d.active);
-  if (d.reveal && !revealed) { deadline = Date.now(); atZero(); }   /* teacher override */
+  if (d.reveal && !revealed) { closeNow(); }   /* reveal driven from the deck */
 }, false);
 
 setTimeout(function () { if (!sawParent) setActive(true); }, 2500);

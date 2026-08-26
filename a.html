@@ -11,11 +11,6 @@ html,body{margin:0;min-height:100%}
 body{background:var(--canvas-soft);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.45;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
 main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:20px 20px 8px;display:flex;flex-direction:column;gap:18px}
 .eyebrow{display:flex;justify-content:space-between;align-items:baseline;gap:14px;font-family:var(--mono);font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-mute)}
-.clock{display:flex;align-items:baseline;gap:10px;padding:11px 16px;border-radius:10px;background:var(--canvas);border:1px solid var(--hairline)}
-.clock b{font-family:var(--mono);font-size:27px;font-weight:400;line-height:1;font-feature-settings:'tnum' 1}
-.clock span{font-size:14px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-mute)}
-.clock.warn{border-color:var(--lemon);background:var(--canvas-cream)}
-.clock.warn b{color:var(--lemon)}
 h1{font-size:23px;font-weight:500;line-height:1.28;letter-spacing:-.3px;margin:0;text-wrap:pretty}
 .sub{font-size:15px;color:var(--ink-mute);margin:0}
 label{display:block;font-size:14px;font-weight:500;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-mute);margin:0 0 9px}
@@ -46,7 +41,6 @@ footer strong{color:var(--ink-secondary);font-weight:500}
 <body>
 <main>
 <div class="eyebrow"><span id="qlabel">checkpoint</span><span id="seclabel"></span></div>
-<div class="clock" id="clock" hidden><b id="clockVal">–</b><span id="clockUnit">seconds left</span></div>
 
 <section id="loadStep"><p class="sub">Checking whether this question is open…</p></section>
 
@@ -78,7 +72,7 @@ footer strong{color:var(--ink-secondary);font-weight:500}
 </section>
 
 <section id="closedStep" hidden>
-<div class="warnbox"><div class="h">Time's up — this question has closed</div>
+<div class="warnbox"><div class="h">This question has closed</div>
 <p class="note" id="closedWhy">Answers are no longer being accepted. The result is on the screen.</p></div>
 </section>
 
@@ -108,6 +102,7 @@ var SEC = /^[AB]$/i.test(RAW) ? TERM + '-' + RAW.toUpperCase() : RAW;
 var API = qp.get('api') || API_DEFAULT;
 var SID_KEY = 'uo.sid';
 var ansKey = function () { return 'uo.ans.' + SEC + '.' + QID; };
+var qs = function () { return 'section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID); };
 var $ = function (id) { return document.getElementById(id); };
 var STEPS = ['loadStep', 'idStep', 'answerStep', 'doneStep', 'closedStep', 'dupStep', 'badStep'];
 var show = function (id) { STEPS.forEach(function (s) { $(s).hidden = (s !== id); }); };
@@ -132,28 +127,29 @@ function jsonp(params, ok, fail) {
   document.head.appendChild(s);
 }
 
-var cfg = null, deadline = 0, tick = null;
+var cfg = null, watch = null;
+var WATCH_INTERVAL = 5000;
 
-function remaining() { return Math.max(0, Math.round((deadline - Date.now()) / 1000)); }
-function startClock(secs) {
-  deadline = Date.now() + secs * 1000;
-  $('clock').hidden = false;
-  paint();
-  if (tick) clearInterval(tick);
-  tick = setInterval(paint, 250);
+/* v3 · nothing on this page counts down, and nothing on this page decides
+   that a question has ended. The server is the only authority: either
+   action=state reports open:false, or a submission comes back rejected.
+   Until one of those happens the input stays live, however long the
+   lecturer leaves the question open. Polling here must stay invisible —
+   while open:true it produces no change on screen at all. */
+function startWatch() {
+  if (watch) return;
+  watch = setInterval(function () {
+    jsonp('action=state&' + qs(), function (st) {
+      if (st && st.open === false) closedNow(null);
+    });
+  }, WATCH_INTERVAL);
 }
-function paint() {
-  var r = remaining();
-  $('clockVal').textContent = r;
-  $('clockUnit').textContent = r === 1 ? 'second left' : 'seconds left';
-  $('clock').className = 'clock' + (r <= 10 ? ' warn' : '');
-  if (r <= 0) { stopClock(); closedNow('The time for this question ran out.'); }
-}
-function stopClock() { if (tick) { clearInterval(tick); tick = null; } }
+function stopWatch() { if (watch) { clearInterval(watch); watch = null; } }
 function closedNow(why) {
-  stopClock();
-  $('clock').hidden = true;
-  if (why) $('closedWhy').textContent = why + ' The result is on the screen.';
+  stopWatch();
+  $('closedWhy').textContent = why
+    ? why + ' The result is on the screen.'
+    : 'Answers are no longer being accepted. The result is on the screen.';
   show('closedStep');
 }
 
@@ -199,9 +195,8 @@ function renderAnswerStep() {
 }
 
 function submit(answer) {
-  if (remaining() <= 0) { closedNow('The time for this question ran out.'); return; }
   $('doneVal').textContent = answer;
-  stopClock(); $('clock').hidden = true;
+  stopWatch();
   show('doneStep');
   var body = new URLSearchParams();
   body.set('qid', QID); body.set('section', SEC);
@@ -212,7 +207,7 @@ function submit(answer) {
   try { fetch(API, { method: 'POST', mode: 'no-cors', body: body }); } catch (e) {}
   try { localStorage.setItem(ansKey(), answer); } catch (e) {}
   setTimeout(function () {
-    jsonp('action=state&section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID), function (st) {
+    jsonp('action=state&' + qs(), function (st) {
       if (st && st.open === false) {
         try { localStorage.removeItem(ansKey()); } catch (e) {}
         closedNow('This question closed as your answer was sent, so it was not recorded.');
@@ -250,25 +245,24 @@ function boot(sc) {
   cfg = (sc && !sc.error && sc.type) ? { type: sc.type } : { type: 'unknown' };
   if (sc && sc.open === false) {
     if (sc.reason === 'not opened') { closedNow(null); $('closedWhy').textContent = 'This question has not been opened yet. Wait for it to appear on the screen.'; }
-    else closedNow('The time for this question ran out.');
+    else closedNow(null);
     return;
   }
-  var left = (sc && sc.remaining != null) ? sc.remaining : (sc && sc.seconds);
-  startClock(Number(left || 60));
+  startWatch();
   begin();
 }
 
 function fallback() {
-  /* studentconfig not deployed yet — use timer state only and offer both input
-     shapes, rather than asking config and leaking the answer to get the type. */
-  jsonp('action=state&section=' + encodeURIComponent(SEC) + '&qid=' + encodeURIComponent(QID), function (st) {
+  /* studentconfig not deployed yet — use open/closed state only and offer both
+     input shapes, rather than asking config and leaking the answer to get the type. */
+  jsonp('action=state&' + qs(), function (st) {
     if (!st || st.open !== true) {
       if (st && st.reason === 'not opened') { closedNow(null); $('closedWhy').textContent = 'This question has not been opened yet. Wait for it to appear on the screen.'; }
-      else closedNow('The time for this question ran out.');
+      else closedNow(null);
       return;
     }
-    boot({ open: true, remaining: st.remaining, seconds: st.seconds });
-  }, function () { boot({ open: true, seconds: 60 }); });
+    boot({ open: true });
+  }, function () { boot({ open: true }); });
 }
 
 jsonp('action=studentconfig&qid=' + encodeURIComponent(QID) + '&section=' + encodeURIComponent(SEC),
